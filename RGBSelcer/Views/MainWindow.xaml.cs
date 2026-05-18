@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using RGBSelcer.Helpers;
 using RGBSelcer.Models;
 using RGBSelcer.Services;
 using RGBSelcer.ViewModels;
@@ -20,11 +21,18 @@ namespace RGBSelcer.Views
                 _viewModel.UserName = AuthService.CurrentUser.Login;
 
             Loaded += MainWindow_Loaded;
+            Closed += MainWindow_Closed;
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             await _viewModel.LoadPalettesAsync();
+            AudioService.StartBackgroundMusic();
+        }
+
+        private void MainWindow_Closed(object? sender, System.EventArgs e)
+        {
+            AudioService.StopBackgroundMusic();
         }
 
         private void OpenPaletteButton_Click(object sender, RoutedEventArgs e)

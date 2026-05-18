@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
         xmlns:converters="clr-namespace:RGBSelcer.Converters"
-        Title="RGB SELCER — Главная" Height="650" Width="900"
+        xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
+        Title="RGB SELCER — Главная" Height="700" Width="950"
         WindowStartupLocation="CenterScreen"
         Background="#FFF5F5F5">
 
@@ -33,6 +34,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <helpers:RgbCube3D Width="45" Height="45" Margin="0,0,10,0" ClipToBounds="True"/>
                     <TextBlock Text="RGB SELCER" FontSize="24" FontWeight="Bold"
                                Foreground="White" VerticalAlignment="Center"/>
                     <TextBlock Text=" — Палитры цветов" FontSize="16"
@@ -121,12 +123,17 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="Мои палитры" Style="{StaticResource SubHeaderStyle}"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <TextBlock Text="Мои палитры" Style="{StaticResource SubHeaderStyle}"/>
+                        <helpers:RgbCube3D Width="100" Height="100" Margin="20,0,0,0"
+                                           ClipToBounds="True" HorizontalAlignment="Right"/>
+                    </StackPanel>
 
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Palettes}"
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding Palettes}"
                               SelectedItem="{Binding SelectedPalette}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
