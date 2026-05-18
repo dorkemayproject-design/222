@@ -1,0 +1,105 @@
+<Window x:Class="RGBSelcer.Views.ProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
+        xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
+        xmlns:converters="clr-namespace:RGBSelcer.Converters"
+        Title="RGB SELCER — Личный кабинет" Height="550" Width="450"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#FFF5F5F5">
+
+    <Window.DataContext>
+        <vm:ProfileViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVis"/>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Background="#FF4A90D9" CornerRadius="8" Padding="15,10" Margin="0,0,0,15">
+            <StackPanel>
+                <TextBlock Text="RGB SELCER" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Личный кабинет" FontSize="14" Foreground="#CCFFFFFF"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Информация о пользователе -->
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="20" Margin="0,0,0,15"
+                BorderBrush="#FFDDDDDD" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Информация о пользователе" Style="{StaticResource SubHeaderStyle}"/>
+                <Separator Margin="0,5,0,10"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Логин:" FontWeight="SemiBold" Margin="0,3"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Login}" Margin="0,3"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Дата регистрации:" FontWeight="SemiBold" Margin="0,3"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CreatedAt}" Margin="0,3"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Палитр создано:" FontWeight="SemiBold" Margin="0,3"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding PaletteCount}" Margin="0,3"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Цветов сохранено:" FontWeight="SemiBold" Margin="0,3"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ColorCount}" Margin="0,3"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Смена пароля -->
+        <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="20" Margin="0,0,0,15"
+                BorderBrush="#FFDDDDDD" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Смена пароля" Style="{StaticResource SubHeaderStyle}"/>
+                <Separator Margin="0,5,0,10"/>
+
+                <TextBlock Text="Текущий пароль" Style="{StaticResource FormLabel}"/>
+                <PasswordBox helpers:PasswordHelper.BindPassword="True"
+                             helpers:PasswordHelper.BoundPassword="{Binding OldPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource InputPasswordBox}"/>
+
+                <TextBlock Text="Новый пароль" Style="{StaticResource FormLabel}"/>
+                <PasswordBox helpers:PasswordHelper.BindPassword="True"
+                             helpers:PasswordHelper.BoundPassword="{Binding NewPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource InputPasswordBox}"/>
+
+                <Button Content="Сменить пароль" Style="{StaticResource PrimaryButton}"
+                        Command="{Binding ChangePasswordCommand}"
+                        HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
+
+                <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}"
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVis}}"/>
+
+                <TextBlock Text="{Binding SuccessMessage}" Foreground="Green" FontSize="12"
+                           Margin="0,5" TextWrapping="Wrap"
+                           Visibility="{Binding SuccessMessage, Converter={StaticResource StringToVis}}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Кнопка закрытия -->
+        <Button Grid.Row="3" Content="Закрыть" Style="{StaticResource PrimaryButton}"
+                Click="CloseButton_Click" HorizontalAlignment="Center" Padding="30,10"/>
+    </Grid>
+</Window>
