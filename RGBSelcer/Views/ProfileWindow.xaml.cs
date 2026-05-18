@@ -5,16 +5,18 @@ namespace RGBSelcer.Views
 {
     public partial class ProfileWindow : Window
     {
+        private readonly ProfileViewModel _viewModel;
+
         public ProfileWindow()
         {
             InitializeComponent();
+            _viewModel = (ProfileViewModel)DataContext;
             Loaded += ProfileWindow_Loaded;
         }
 
         private async void ProfileWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var vm = (ProfileViewModel)DataContext;
-            await vm.LoadProfileAsync();
+            await _viewModel.LoadDataAsync();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

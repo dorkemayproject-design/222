@@ -8,15 +8,15 @@ namespace RGBSelcer.Data
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
-        public DbSet<ColorPalette> Palettes { get; set; } = null!;
-        public DbSet<ColorItem> Colors { get; set; } = null!;
+        public DbSet<Car> Cars { get; set; } = null!;
+        public DbSet<Purchase> Purchases { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var dbPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "RGBSelcer",
-                "rgbselcer.db");
+                "SelcerRoyalityPRM",
+                "selcer.db");
 
             var dir = Path.GetDirectoryName(dbPath)!;
             if (!Directory.Exists(dir))
@@ -35,23 +35,26 @@ namespace RGBSelcer.Data
                 entity.Property(e => e.PasswordHash).IsRequired();
             });
 
-            modelBuilder.Entity<ColorPalette>(entity =>
+            modelBuilder.Entity<Car>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-                entity.HasOne(e => e.User)
-                      .WithMany(u => u.Palettes)
-                      .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.Brand).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Model).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.LicenseCategory).IsRequired().HasMaxLength(5);
             });
 
-            modelBuilder.Entity<ColorItem>(entity =>
+            modelBuilder.Entity<Purchase>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).HasMaxLength(50);
-                entity.HasOne(e => e.Palette)
-                      .WithMany(p => p.Colors)
-                      .HasForeignKey(e => e.PaletteId)
+                entity.Property(e => e.PaidAmount).HasColumnType("decimal(18,2)");
+                entity.HasOne(e => e.User)
+                      .WithMany(u => u.Purchases)
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Car)
+                      .WithMany()
+                      .HasForeignKey(e => e.CarId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }

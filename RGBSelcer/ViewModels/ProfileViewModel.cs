@@ -10,7 +10,7 @@ namespace RGBSelcer.ViewModels
     public class ProfileViewModel : BaseViewModel
     {
         private readonly AuthService _authService = new();
-        private readonly PaletteService _paletteService = new();
+        private readonly CarService _carService = new();
 
         private string _login = string.Empty;
         public string Login
@@ -19,32 +19,11 @@ namespace RGBSelcer.ViewModels
             set => SetProperty(ref _login, value);
         }
 
-        private string _createdAt = string.Empty;
-        public string CreatedAt
+        private string _registeredAt = string.Empty;
+        public string RegisteredAt
         {
-            get => _createdAt;
-            set => SetProperty(ref _createdAt, value);
-        }
-
-        private int _paletteCount;
-        public int PaletteCount
-        {
-            get => _paletteCount;
-            set => SetProperty(ref _paletteCount, value);
-        }
-
-        private int _colorCount;
-        public int ColorCount
-        {
-            get => _colorCount;
-            set => SetProperty(ref _colorCount, value);
-        }
-
-        private ObservableCollection<ColorPalette> _userPalettes = new();
-        public ObservableCollection<ColorPalette> UserPalettes
-        {
-            get => _userPalettes;
-            set => SetProperty(ref _userPalettes, value);
+            get => _registeredAt;
+            set => SetProperty(ref _registeredAt, value);
         }
 
         private string _oldPassword = string.Empty;
@@ -61,34 +40,67 @@ namespace RGBSelcer.ViewModels
             set => SetProperty(ref _newPassword, value);
         }
 
-        public AsyncRelayCommand LoadProfileCommand { get; }
+        private int _totalCars;
+        public int TotalCars
+        {
+            get => _totalCars;
+            set => SetProperty(ref _totalCars, value);
+        }
+
+        private int _purchaseCount;
+        public int PurchaseCount
+        {
+            get => _purchaseCount;
+            set => SetProperty(ref _purchaseCount, value);
+        }
+
+        private string _totalSpent = "0 ₽";
+        public string TotalSpent
+        {
+            get => _totalSpent;
+            set => SetProperty(ref _totalSpent, value);
+        }
+
+        private ObservableCollection<Purchase> _purchases = new();
+        public ObservableCollection<Purchase> Purchases
+        {
+            get => _purchases;
+            set => SetProperty(ref _purchases, value);
+        }
+
         public AsyncRelayCommand ChangePasswordCommand { get; }
+        public AsyncRelayCommand LoadDataCommand { get; }
 
         public ProfileViewModel()
         {
-            LoadProfileCommand = new AsyncRelayCommand(LoadProfileAsync);
             ChangePasswordCommand = new AsyncRelayCommand(ChangePasswordAsync);
+            LoadDataCommand = new AsyncRelayCommand(LoadDataAsync);
+
+            if (AuthService.CurrentUser != null)
+            {
+                Login = AuthService.CurrentUser.Login;
+                RegisteredAt = AuthService.CurrentUser.CreatedAt.ToString("dd.MM.yyyy HH:mm");
+            }
         }
 
-        public async Task LoadProfileAsync()
+        public async Task LoadDataAsync()
         {
             if (AuthService.CurrentUser == null) return;
 
-            Login = AuthService.CurrentUser.Login;
-            CreatedAt = AuthService.CurrentUser.CreatedAt.ToString("dd.MM.yyyy HH:mm");
-
             try
             {
-                var (paletteCount, colorCount) = await _paletteService.GetUserStatsAsync(AuthService.CurrentUser.Id);
-                PaletteCount = paletteCount;
-                ColorCount = colorCount;
+                var (carCount, purchaseCount, totalSpent) =
+                    await _carService.GetUserStatsAsync(AuthService.CurrentUser.Id);
+                TotalCars = carCount;
+                PurchaseCount = purchaseCount;
+                TotalSpent = $"{totalSpent:N0} ₽";
 
-                var palettes = await _paletteService.GetUserPalettesAsync(AuthService.CurrentUser.Id);
-                UserPalettes = new ObservableCollection<ColorPalette>(palettes);
+                var purchases = await _carService.GetUserPurchasesAsync(AuthService.CurrentUser.Id);
+                Purchases = new ObservableCollection<Purchase>(purchases);
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Ошибка загрузки статистики: {ex.Message}";
+                ErrorMessage = $"Ошибка загрузки: {ex.Message}";
             }
         }
 

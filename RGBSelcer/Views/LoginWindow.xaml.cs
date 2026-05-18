@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Input;
-using RGBSelcer.Services;
 using RGBSelcer.ViewModels;
 
 namespace RGBSelcer.Views
@@ -17,7 +16,7 @@ namespace RGBSelcer.Views
             var vm = (LoginViewModel)DataContext;
             await vm.LoginCommand.ExecuteAsync(null);
 
-            if (AuthService.CurrentUser != null)
+            if (!string.IsNullOrEmpty(vm.SuccessMessage))
             {
                 var mainWindow = new MainWindow();
                 mainWindow.Show();

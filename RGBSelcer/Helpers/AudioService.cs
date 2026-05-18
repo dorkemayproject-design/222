@@ -7,15 +7,23 @@ namespace RGBSelcer.Helpers
     public static class AudioService
     {
         private static MediaPlayer? _player;
-        private static string? _audioFilePath;
+        private static string? _tempFilePath;
 
         public static void StartBackgroundMusic()
         {
             try
             {
-                _audioFilePath = GenerateAmbientWav();
+                var dir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "SelcerRoyalityPRM");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                _tempFilePath = Path.Combine(dir, "ambient.wav");
+                GenerateAmbientWav(_tempFilePath);
+
                 _player = new MediaPlayer();
-                _player.Open(new Uri(_audioFilePath, UriKind.Absolute));
+                _player.Open(new Uri(_tempFilePath));
                 _player.Volume = 0.15;
                 _player.MediaEnded += (s, e) =>
                 {
@@ -26,7 +34,6 @@ namespace RGBSelcer.Helpers
             }
             catch
             {
-                // Silently ignore audio errors
             }
         }
 
@@ -38,82 +45,64 @@ namespace RGBSelcer.Helpers
                 _player?.Close();
                 _player = null;
 
-                if (_audioFilePath != null && File.Exists(_audioFilePath))
-                    File.Delete(_audioFilePath);
+                if (_tempFilePath != null && File.Exists(_tempFilePath))
+                    File.Delete(_tempFilePath);
             }
             catch
             {
-                // Silently ignore
             }
         }
 
-        public static void SetVolume(double volume)
+        private static void GenerateAmbientWav(string path)
         {
-            if (_player != null)
-                _player.Volume = Math.Clamp(volume, 0.0, 1.0);
-        }
-
-        private static string GenerateAmbientWav()
-        {
-            var dir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "RGBSelcer");
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            var filePath = Path.Combine(dir, "ambient.wav");
-
-            int sampleRate = 22050;
+            int sampleRate = 44100;
             int durationSec = 8;
-            int totalSamples = sampleRate * durationSec;
-            short[] samples = new short[totalSamples];
+            int numSamples = sampleRate * durationSec;
+            short[] samples = new short[numSamples];
 
-            var rng = new Random(42);
+            double[] freqs = { 130.81, 164.81, 196.0, 261.63 };
 
-            for (int i = 0; i < totalSamples; i++)
+            for (int i = 0; i < numSamples; i++)
             {
                 double t = (double)i / sampleRate;
+                double sample = 0;
 
-                double wave1 = Math.Sin(2 * Math.PI * 130.81 * t) * 0.2;
-                double wave2 = Math.Sin(2 * Math.PI * 164.81 * t) * 0.15;
-                double wave3 = Math.Sin(2 * Math.PI * 196.00 * t) * 0.12;
-                double wave4 = Math.Sin(2 * Math.PI * 261.63 * t) * 0.08;
+                foreach (var freq in freqs)
+                {
+                    double lfo = 1.0 + 0.003 * Math.Sin(2 * Math.PI * 0.2 * t);
+                    sample += Math.Sin(2 * Math.PI * freq * lfo * t);
+                }
 
-                double lfo = 0.7 + 0.3 * Math.Sin(2 * Math.PI * 0.2 * t);
+                sample /= freqs.Length;
 
-                double sample = (wave1 + wave2 + wave3 + wave4) * lfo;
+                double fadeIn = Math.Min(t / 1.5, 1.0);
+                double fadeOut = Math.Min((durationSec - t) / 1.5, 1.0);
+                sample *= fadeIn * fadeOut * 0.5;
 
-                double fadeIn = Math.Min(t / 1.0, 1.0);
-                double fadeOut = Math.Min((durationSec - t) / 1.0, 1.0);
-                sample *= fadeIn * fadeOut;
-
-                samples[i] = (short)(sample * short.MaxValue * 0.5);
+                samples[i] = (short)(sample * short.MaxValue);
             }
 
-            using var fs = new FileStream(filePath, FileMode.Create);
-            using var writer = new BinaryWriter(fs);
-
+            using var fs = new FileStream(path, FileMode.Create);
+            using var bw = new BinaryWriter(fs);
             int byteRate = sampleRate * 2;
-            int dataSize = totalSamples * 2;
+            int dataSize = numSamples * 2;
 
-            writer.Write(new[] { 'R', 'I', 'F', 'F' });
-            writer.Write(36 + dataSize);
-            writer.Write(new[] { 'W', 'A', 'V', 'E' });
-            writer.Write(new[] { 'f', 'm', 't', ' ' });
-            writer.Write(16);
-            writer.Write((short)1);
-            writer.Write((short)1);
-            writer.Write(sampleRate);
-            writer.Write(byteRate);
-            writer.Write((short)2);
-            writer.Write((short)16);
-            writer.Write(new[] { 'd', 'a', 't', 'a' });
-            writer.Write(dataSize);
+            bw.Write(new[] { 'R', 'I', 'F', 'F' });
+            bw.Write(36 + dataSize);
+            bw.Write(new[] { 'W', 'A', 'V', 'E' });
+            bw.Write(new[] { 'f', 'm', 't', ' ' });
+            bw.Write(16);
+            bw.Write((short)1);
+            bw.Write((short)1);
+            bw.Write(sampleRate);
+            bw.Write(byteRate);
+            bw.Write((short)2);
+            bw.Write((short)16);
+            bw.Write(new[] { 'd', 'a', 't', 'a' });
+            bw.Write(dataSize);
 
             foreach (var s in samples)
-                writer.Write(s);
-
-            return filePath;
+                bw.Write(s);
         }
     }
 }

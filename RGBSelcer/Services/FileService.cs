@@ -11,45 +11,35 @@ namespace RGBSelcer.Services
 {
     public class FileService
     {
-        public class PaletteExportData
+        public class CarExportData
         {
-            public string Name { get; set; } = string.Empty;
-            public string Description { get; set; } = string.Empty;
+            public string Brand { get; set; } = string.Empty;
+            public string Model { get; set; } = string.Empty;
+            public int Year { get; set; }
+            public decimal Price { get; set; }
+            public string LicenseCategory { get; set; } = string.Empty;
+            public int MaxSpeedKmh { get; set; }
+            public int HorsePower { get; set; }
+            public string EngineType { get; set; } = string.Empty;
             public string ExportedAt { get; set; } = string.Empty;
-            public List<ColorExportData> Colors { get; set; } = new();
         }
 
-        public class ColorExportData
+        public async Task ExportCarsToJsonAsync(List<Car> cars, string filePath, IProgress<int>? progress = null)
         {
-            public string Name { get; set; } = string.Empty;
-            public byte Red { get; set; }
-            public byte Green { get; set; }
-            public byte Blue { get; set; }
-            public string HexCode { get; set; } = string.Empty;
-        }
-
-        public async Task ExportPaletteToJsonAsync(ColorPalette palette, string filePath, IProgress<int>? progress = null)
-        {
-            var exportData = new PaletteExportData
-            {
-                Name = palette.Name,
-                Description = palette.Description,
-                ExportedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            };
-
             progress?.Report(20);
 
-            foreach (var color in palette.Colors)
+            var exportData = cars.Select(c => new CarExportData
             {
-                exportData.Colors.Add(new ColorExportData
-                {
-                    Name = color.Name,
-                    Red = color.Red,
-                    Green = color.Green,
-                    Blue = color.Blue,
-                    HexCode = color.HexCode
-                });
-            }
+                Brand = c.Brand,
+                Model = c.Model,
+                Year = c.Year,
+                Price = c.Price,
+                LicenseCategory = c.LicenseCategory,
+                MaxSpeedKmh = c.MaxSpeedKmh,
+                HorsePower = c.HorsePower,
+                EngineType = c.EngineType,
+                ExportedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+            }).ToList();
 
             progress?.Report(50);
 
@@ -59,118 +49,61 @@ namespace RGBSelcer.Services
             progress?.Report(100);
         }
 
-        public async Task ExportPaletteToCsvAsync(ColorPalette palette, string filePath, IProgress<int>? progress = null)
+        public async Task ExportCarsToCsvAsync(List<Car> cars, string filePath, IProgress<int>? progress = null)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Name,Red,Green,Blue,HexCode");
+            sb.AppendLine("Brand,Model,Year,Price,Category,MaxSpeed,HorsePower,Engine");
 
             progress?.Report(20);
 
-            var total = palette.Colors.Count;
+            var total = cars.Count;
             for (int i = 0; i < total; i++)
             {
-                var color = palette.Colors[i];
-                sb.AppendLine($"\"{color.Name}\",{color.Red},{color.Green},{color.Blue},\"{color.HexCode}\"");
+                var c = cars[i];
+                sb.AppendLine($"\"{c.Brand}\",\"{c.Model}\",{c.Year},{c.Price},\"{c.LicenseCategory}\",{c.MaxSpeedKmh},{c.HorsePower},\"{c.EngineType}\"");
 
                 var percent = 20 + (int)((i + 1.0) / total * 60);
                 progress?.Report(percent);
             }
 
             await File.WriteAllTextAsync(filePath, sb.ToString());
-
             progress?.Report(100);
         }
 
-        public async Task ExportPaletteToTxtAsync(ColorPalette palette, string filePath, IProgress<int>? progress = null)
+        public async Task ExportCarsToTxtAsync(List<Car> cars, string filePath, IProgress<int>? progress = null)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Палитра: {palette.Name}");
-            sb.AppendLine($"Описание: {palette.Description}");
-            sb.AppendLine($"Дата экспорта: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            sb.AppendLine(new string('-', 50));
+            sb.AppendLine("╔══════════════════════════════════════════════╗");
+            sb.AppendLine("║       SELCER ROYALITY PRM — Каталог         ║");
+            sb.AppendLine("╚══════════════════════════════════════════════╝");
+            sb.AppendLine($"  Дата экспорта: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine(new string('─', 50));
             sb.AppendLine();
 
             progress?.Report(20);
 
-            var total = palette.Colors.Count;
+            var total = cars.Count;
             for (int i = 0; i < total; i++)
             {
-                var color = palette.Colors[i];
-                sb.AppendLine($"  {color.Name}");
-                sb.AppendLine($"    RGB: ({color.Red}, {color.Green}, {color.Blue})");
-                sb.AppendLine($"    HEX: {color.HexCode}");
+                var c = cars[i];
+                sb.AppendLine($"  ★ {c.Brand} {c.Model} ({c.Year})");
+                sb.AppendLine($"    Цена: {c.Price:N0} ₽");
+                sb.AppendLine($"    Категория прав: {c.LicenseCategory}");
+                sb.AppendLine($"    Макс. скорость: {c.MaxSpeedKmh} км/ч");
+                sb.AppendLine($"    Мощность: {c.HorsePower} л.с.");
+                sb.AppendLine($"    Двигатель: {c.EngineType} ({c.EngineVolume} л)");
+                sb.AppendLine($"    Разгон 0-100: {c.Acceleration0to100} сек");
                 sb.AppendLine();
 
                 var percent = 20 + (int)((i + 1.0) / total * 60);
                 progress?.Report(percent);
             }
 
-            sb.AppendLine(new string('-', 50));
-            sb.AppendLine($"Всего цветов: {palette.Colors.Count}");
+            sb.AppendLine(new string('─', 50));
+            sb.AppendLine($"  Всего автомобилей: {cars.Count}");
 
             await File.WriteAllTextAsync(filePath, sb.ToString());
-
             progress?.Report(100);
-        }
-
-        public async Task<PaletteExportData?> ImportPaletteFromJsonAsync(string filePath, IProgress<int>? progress = null)
-        {
-            progress?.Report(10);
-
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("Файл не найден.", filePath);
-
-            var json = await File.ReadAllTextAsync(filePath);
-            progress?.Report(50);
-
-            var data = JsonConvert.DeserializeObject<PaletteExportData>(json);
-            progress?.Report(100);
-
-            return data;
-        }
-
-        public async Task<PaletteExportData?> ImportPaletteFromCsvAsync(string filePath, IProgress<int>? progress = null)
-        {
-            progress?.Report(10);
-
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("Файл не найден.", filePath);
-
-            var lines = await File.ReadAllLinesAsync(filePath);
-            progress?.Report(30);
-
-            if (lines.Length < 2)
-                throw new InvalidDataException("CSV файл пуст или содержит только заголовок.");
-
-            var data = new PaletteExportData
-            {
-                Name = Path.GetFileNameWithoutExtension(filePath),
-                Description = "Импортировано из CSV",
-                ExportedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            };
-
-            var total = lines.Length - 1;
-            for (int i = 1; i < lines.Length; i++)
-            {
-                var parts = ParseCsvLine(lines[i]);
-                if (parts.Length >= 5)
-                {
-                    data.Colors.Add(new ColorExportData
-                    {
-                        Name = parts[0].Trim('"'),
-                        Red = byte.Parse(parts[1]),
-                        Green = byte.Parse(parts[2]),
-                        Blue = byte.Parse(parts[3]),
-                        HexCode = parts[4].Trim('"')
-                    });
-                }
-
-                var percent = 30 + (int)((i * 1.0) / total * 60);
-                progress?.Report(percent);
-            }
-
-            progress?.Report(100);
-            return data;
         }
 
         public async Task DeleteFileAsync(string filePath)
@@ -180,32 +113,6 @@ namespace RGBSelcer.Services
                 if (File.Exists(filePath))
                     File.Delete(filePath);
             });
-        }
-
-        private static string[] ParseCsvLine(string line)
-        {
-            var result = new List<string>();
-            var current = new StringBuilder();
-            bool inQuotes = false;
-
-            foreach (char c in line)
-            {
-                if (c == '"')
-                {
-                    inQuotes = !inQuotes;
-                }
-                else if (c == ',' && !inQuotes)
-                {
-                    result.Add(current.ToString());
-                    current.Clear();
-                }
-                else
-                {
-                    current.Append(c);
-                }
-            }
-            result.Add(current.ToString());
-            return result.ToArray();
         }
     }
 }

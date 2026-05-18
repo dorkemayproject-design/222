@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
@@ -11,21 +13,22 @@ namespace RGBSelcer.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly PaletteService _paletteService = new();
+        private readonly CarService _carService = new();
         private readonly FileService _fileService = new();
+        private List<Car> _allCars = new();
 
-        private ObservableCollection<ColorPalette> _palettes = new();
-        public ObservableCollection<ColorPalette> Palettes
+        private ObservableCollection<Car> _cars = new();
+        public ObservableCollection<Car> Cars
         {
-            get => _palettes;
-            set => SetProperty(ref _palettes, value);
+            get => _cars;
+            set => SetProperty(ref _cars, value);
         }
 
-        private ColorPalette? _selectedPalette;
-        public ColorPalette? SelectedPalette
+        private Car? _selectedCar;
+        public Car? SelectedCar
         {
-            get => _selectedPalette;
-            set => SetProperty(ref _selectedPalette, value);
+            get => _selectedCar;
+            set => SetProperty(ref _selectedCar, value);
         }
 
         private string _userName = string.Empty;
@@ -56,44 +59,89 @@ namespace RGBSelcer.ViewModels
             set => SetProperty(ref _statusText, value);
         }
 
-        public AsyncRelayCommand LoadPalettesCommand { get; }
-        public AsyncRelayCommand CreatePaletteCommand { get; }
-        public AsyncRelayCommand DeletePaletteCommand { get; }
+        private string _searchText = string.Empty;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                    ApplyFilters();
+            }
+        }
+
+        private string _selectedCategory = "Все";
+        public string SelectedCategory
+        {
+            get => _selectedCategory;
+            set
+            {
+                if (SetProperty(ref _selectedCategory, value))
+                    ApplyFilters();
+            }
+        }
+
+        private string _selectedBodyType = "Все";
+        public string SelectedBodyType
+        {
+            get => _selectedBodyType;
+            set
+            {
+                if (SetProperty(ref _selectedBodyType, value))
+                    ApplyFilters();
+            }
+        }
+
+        private string _selectedBrand = "Все";
+        public string SelectedBrand
+        {
+            get => _selectedBrand;
+            set
+            {
+                if (SetProperty(ref _selectedBrand, value))
+                    ApplyFilters();
+            }
+        }
+
+        private ObservableCollection<string> _brands = new() { "Все" };
+        public ObservableCollection<string> Brands
+        {
+            get => _brands;
+            set => SetProperty(ref _brands, value);
+        }
+
+        public AsyncRelayCommand LoadCarsCommand { get; }
         public AsyncRelayCommand ExportJsonCommand { get; }
         public AsyncRelayCommand ExportCsvCommand { get; }
         public AsyncRelayCommand ExportTxtCommand { get; }
-        public AsyncRelayCommand ImportJsonCommand { get; }
-        public AsyncRelayCommand ImportCsvCommand { get; }
         public AsyncRelayCommand DeleteFileCommand { get; }
 
         public MainViewModel()
         {
-            LoadPalettesCommand = new AsyncRelayCommand(LoadPalettesAsync);
-            CreatePaletteCommand = new AsyncRelayCommand(CreatePaletteAsync);
-            DeletePaletteCommand = new AsyncRelayCommand(DeletePaletteAsync);
+            LoadCarsCommand = new AsyncRelayCommand(LoadCarsAsync);
             ExportJsonCommand = new AsyncRelayCommand(ExportToJsonAsync);
             ExportCsvCommand = new AsyncRelayCommand(ExportToCsvAsync);
             ExportTxtCommand = new AsyncRelayCommand(ExportToTxtAsync);
-            ImportJsonCommand = new AsyncRelayCommand(ImportFromJsonAsync);
-            ImportCsvCommand = new AsyncRelayCommand(ImportFromCsvAsync);
             DeleteFileCommand = new AsyncRelayCommand(DeleteFileAsync);
 
             if (AuthService.CurrentUser != null)
                 UserName = AuthService.CurrentUser.Login;
         }
 
-        public async Task LoadPalettesAsync()
+        public async Task LoadCarsAsync()
         {
-            if (AuthService.CurrentUser == null) return;
-
             IsLoading = true;
-            StatusText = "Загрузка палитр...";
+            StatusText = "Загрузка каталога...";
 
             try
             {
-                var palettes = await _paletteService.GetUserPalettesAsync(AuthService.CurrentUser.Id);
-                Palettes = new ObservableCollection<ColorPalette>(palettes);
-                StatusText = $"Загружено палитр: {palettes.Count}";
+                _allCars = await _carService.GetAllCarsAsync();
+                var brandList = new List<string> { "Все" };
+                brandList.AddRange(_allCars.Select(c => c.Brand).Distinct().OrderBy(b => b));
+                Brands = new ObservableCollection<string>(brandList);
+
+                ApplyFilters();
+                StatusText = $"Загружено автомобилей: {_allCars.Count}";
             }
             catch (Exception ex)
             {
@@ -106,156 +154,86 @@ namespace RGBSelcer.ViewModels
             }
         }
 
-        private async Task CreatePaletteAsync()
+        private void ApplyFilters()
         {
-            if (AuthService.CurrentUser == null) return;
+            var filtered = _allCars.AsEnumerable();
 
-            var name = $"Новая палитра {DateTime.Now:HH:mm:ss}";
-            try
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                await _paletteService.CreatePaletteAsync(AuthService.CurrentUser.Id, name, "");
-                await LoadPalettesAsync();
-                StatusText = "Палитра создана";
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка создания: {ex.Message}";
-            }
-        }
-
-        private async Task DeletePaletteAsync()
-        {
-            if (SelectedPalette == null)
-            {
-                ErrorMessage = "Выберите палитру для удаления.";
-                return;
+                var search = SearchText.ToLower();
+                filtered = filtered.Where(c =>
+                    c.Brand.ToLower().Contains(search) ||
+                    c.Model.ToLower().Contains(search) ||
+                    c.Description.ToLower().Contains(search) ||
+                    c.Country.ToLower().Contains(search));
             }
 
-            var result = MessageBox.Show(
-                $"Удалить палитру \"{SelectedPalette.Name}\"?",
-                "Подтверждение удаления",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+            if (SelectedCategory != "Все")
+                filtered = filtered.Where(c => c.LicenseCategory == SelectedCategory);
 
-            if (result == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    await _paletteService.DeletePaletteAsync(SelectedPalette.Id);
-                    await LoadPalettesAsync();
-                    StatusText = "Палитра удалена";
-                }
-                catch (Exception ex)
-                {
-                    ErrorMessage = $"Ошибка удаления: {ex.Message}";
-                }
-            }
+            if (SelectedBodyType != "Все")
+                filtered = filtered.Where(c => c.BodyType == SelectedBodyType);
+
+            if (SelectedBrand != "Все")
+                filtered = filtered.Where(c => c.Brand == SelectedBrand);
+
+            Cars = new ObservableCollection<Car>(filtered);
         }
 
         private async Task ExportToJsonAsync()
         {
-            if (SelectedPalette == null)
-            {
-                ErrorMessage = "Выберите палитру для экспорта.";
-                return;
-            }
-
             var dialog = new SaveFileDialog
             {
                 Filter = "JSON файлы (*.json)|*.json",
-                FileName = $"{SelectedPalette.Name}.json",
-                Title = "Экспорт палитры в JSON"
+                FileName = "catalog.json",
+                Title = "Экспорт каталога в JSON"
             };
 
             if (dialog.ShowDialog() == true)
             {
                 await ExportWithProgressAsync(
-                    () => _fileService.ExportPaletteToJsonAsync(SelectedPalette, dialog.FileName,
+                    () => _fileService.ExportCarsToJsonAsync(Cars.ToList(), dialog.FileName,
                         new Progress<int>(p => ProgressValue = p)),
                     "Экспорт в JSON...",
-                    "Палитра экспортирована в JSON");
+                    "Каталог экспортирован в JSON");
             }
         }
 
         private async Task ExportToCsvAsync()
         {
-            if (SelectedPalette == null)
-            {
-                ErrorMessage = "Выберите палитру для экспорта.";
-                return;
-            }
-
             var dialog = new SaveFileDialog
             {
                 Filter = "CSV файлы (*.csv)|*.csv",
-                FileName = $"{SelectedPalette.Name}.csv",
-                Title = "Экспорт палитры в CSV"
+                FileName = "catalog.csv",
+                Title = "Экспорт каталога в CSV"
             };
 
             if (dialog.ShowDialog() == true)
             {
                 await ExportWithProgressAsync(
-                    () => _fileService.ExportPaletteToCsvAsync(SelectedPalette, dialog.FileName,
+                    () => _fileService.ExportCarsToCsvAsync(Cars.ToList(), dialog.FileName,
                         new Progress<int>(p => ProgressValue = p)),
                     "Экспорт в CSV...",
-                    "Палитра экспортирована в CSV");
+                    "Каталог экспортирован в CSV");
             }
         }
 
         private async Task ExportToTxtAsync()
         {
-            if (SelectedPalette == null)
-            {
-                ErrorMessage = "Выберите палитру для экспорта.";
-                return;
-            }
-
             var dialog = new SaveFileDialog
             {
                 Filter = "Текстовые файлы (*.txt)|*.txt",
-                FileName = $"{SelectedPalette.Name}.txt",
-                Title = "Экспорт палитры в TXT"
+                FileName = "catalog.txt",
+                Title = "Экспорт каталога в TXT"
             };
 
             if (dialog.ShowDialog() == true)
             {
                 await ExportWithProgressAsync(
-                    () => _fileService.ExportPaletteToTxtAsync(SelectedPalette, dialog.FileName,
+                    () => _fileService.ExportCarsToTxtAsync(Cars.ToList(), dialog.FileName,
                         new Progress<int>(p => ProgressValue = p)),
                     "Экспорт в TXT...",
-                    "Палитра экспортирована в TXT");
-            }
-        }
-
-        private async Task ImportFromJsonAsync()
-        {
-            if (AuthService.CurrentUser == null) return;
-
-            var dialog = new OpenFileDialog
-            {
-                Filter = "JSON файлы (*.json)|*.json",
-                Title = "Импорт палитры из JSON"
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                await ImportWithProgressAsync(dialog.FileName, true);
-            }
-        }
-
-        private async Task ImportFromCsvAsync()
-        {
-            if (AuthService.CurrentUser == null) return;
-
-            var dialog = new OpenFileDialog
-            {
-                Filter = "CSV файлы (*.csv)|*.csv",
-                Title = "Импорт палитры из CSV"
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                await ImportWithProgressAsync(dialog.FileName, false);
+                    "Каталог экспортирован в TXT");
             }
         }
 
@@ -306,57 +284,6 @@ namespace RGBSelcer.ViewModels
             {
                 ErrorMessage = $"Ошибка экспорта: {ex.Message}";
                 StatusText = "Ошибка экспорта";
-            }
-            finally
-            {
-                await Task.Delay(500);
-                IsProgressVisible = false;
-            }
-        }
-
-        private async Task ImportWithProgressAsync(string filePath, bool isJson)
-        {
-            if (AuthService.CurrentUser == null) return;
-
-            IsProgressVisible = true;
-            ProgressValue = 0;
-            StatusText = "Импорт палитры...";
-            ErrorMessage = string.Empty;
-
-            try
-            {
-                var progress = new Progress<int>(p => ProgressValue = p);
-
-                FileService.PaletteExportData? data;
-                if (isJson)
-                    data = await _fileService.ImportPaletteFromJsonAsync(filePath, progress);
-                else
-                    data = await _fileService.ImportPaletteFromCsvAsync(filePath, progress);
-
-                if (data == null)
-                {
-                    ErrorMessage = "Не удалось прочитать файл.";
-                    return;
-                }
-
-                var palette = await _paletteService.CreatePaletteAsync(
-                    AuthService.CurrentUser.Id,
-                    data.Name,
-                    data.Description);
-
-                foreach (var color in data.Colors)
-                {
-                    await _paletteService.AddColorAsync(
-                        palette.Id, color.Name, color.Red, color.Green, color.Blue);
-                }
-
-                await LoadPalettesAsync();
-                StatusText = $"Импортирована палитра \"{data.Name}\" ({data.Colors.Count} цветов)";
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка импорта: {ex.Message}";
-                StatusText = "Ошибка импорта";
             }
             finally
             {

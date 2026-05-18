@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using RGBSelcer.Services;
 
@@ -36,7 +35,7 @@ namespace RGBSelcer.ViewModels
             RegisterCommand = new AsyncRelayCommand(RegisterAsync);
         }
 
-        private async Task RegisterAsync()
+        private async System.Threading.Tasks.Task RegisterAsync()
         {
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
@@ -47,11 +46,7 @@ namespace RGBSelcer.ViewModels
                 return;
             }
 
-            IsLoading = true;
-
             var (success, message) = await _authService.RegisterAsync(Login, Password);
-
-            IsLoading = false;
 
             if (success)
                 SuccessMessage = message;

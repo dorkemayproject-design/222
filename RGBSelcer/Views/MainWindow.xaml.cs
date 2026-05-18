@@ -1,5 +1,4 @@
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using RGBSelcer.Helpers;
 using RGBSelcer.Models;
@@ -26,7 +25,7 @@ namespace RGBSelcer.Views
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await _viewModel.LoadPalettesAsync();
+            await _viewModel.LoadCarsAsync();
             AudioService.StartBackgroundMusic();
         }
 
@@ -35,29 +34,13 @@ namespace RGBSelcer.Views
             AudioService.StopBackgroundMusic();
         }
 
-        private void OpenPaletteButton_Click(object sender, RoutedEventArgs e)
+        private void CarCard_Click(object sender, MouseButtonEventArgs e)
         {
-            OpenSelectedPalette();
-        }
-
-        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            OpenSelectedPalette();
-        }
-
-        private void OpenSelectedPalette()
-        {
-            if (_viewModel.SelectedPalette == null)
+            if (sender is FrameworkElement element && element.DataContext is Car car)
             {
-                MessageBox.Show("Выберите палитру для открытия.", "Внимание",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                var detailWindow = new CarDetailWindow(car.Id);
+                detailWindow.ShowDialog();
             }
-
-            var editor = new PaletteEditorWindow(_viewModel.SelectedPalette.Id);
-            editor.ShowDialog();
-
-            _ = _viewModel.LoadPalettesAsync();
         }
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)

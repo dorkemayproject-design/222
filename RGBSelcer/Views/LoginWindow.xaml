@@ -4,7 +4,7 @@
         xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
         xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
         xmlns:converters="clr-namespace:RGBSelcer.Converters"
-        Title="RGB SELCER — Вход" Height="600" Width="500"
+        Title="SELCER ROYALITY PRM — Вход" Height="620" Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -91,16 +91,6 @@
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bg" Property="Background">
-                                    <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Color="#FFE0C8FF" Offset="0"/>
-                                            <GradientStop Color="#FFD0B0FF" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -177,7 +167,7 @@
         </Border.Effect>
 
         <Grid>
-            <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top"
+            <Button Content="&#x2715;" HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,15,20,0" Click="CloseButton_Click"
                     FontSize="18" Foreground="#AAFFFFFF" Cursor="Hand"
                     Background="Transparent" BorderThickness="0">
@@ -204,16 +194,21 @@
             <StackPanel VerticalAlignment="Center" Margin="50,30">
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
-                    <helpers:RgbCube3D Width="55" Height="55" Margin="0,0,12,0" ClipToBounds="True"/>
-                    <TextBlock Text="RGB SELCER" FontSize="42" FontWeight="Black"
-                               Foreground="White" VerticalAlignment="Center">
-                        <TextBlock.Effect>
-                            <DropShadowEffect Color="#FF3D0066" ShadowDepth="3" BlurRadius="10" Opacity="0.5"/>
-                        </TextBlock.Effect>
-                    </TextBlock>
+                    <helpers:Car3DModel Width="65" Height="65" Margin="0,0,12,0" ClipToBounds="True"
+                                        CarType="sport" CarColor="#FFFF3030"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="SELCER ROYALITY" FontSize="32" FontWeight="Black"
+                                   Foreground="White">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#FF3D0066" ShadowDepth="3" BlurRadius="10" Opacity="0.5"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                        <TextBlock Text="P  R  M" FontSize="22" FontWeight="Bold"
+                                   Foreground="#FFEBB0FF" Margin="0,-5,0,0"/>
+                    </StackPanel>
                 </StackPanel>
 
-                <TextBlock Text="Менеджер цветовых палитр" FontSize="14"
+                <TextBlock Text="&#x1F697; Премиальный автосалон" FontSize="14"
                            Foreground="#CCFFFFFF" HorizontalAlignment="Center" Margin="0,0,0,25"
                            FontStyle="Italic"/>
 
@@ -262,7 +257,7 @@
                     </StackPanel>
                 </Border>
 
-                <TextBlock Text="© 2025 RGB SELCER • Учебный проект" FontSize="10"
+                <TextBlock Text="&#x00A9; 2025 SELCER ROYALITY PRM" FontSize="10"
                            Foreground="#66FFFFFF" HorizontalAlignment="Center" Margin="0,20,0,0"/>
             </StackPanel>
         </Grid>

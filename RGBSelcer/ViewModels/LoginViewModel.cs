@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using RGBSelcer.Services;
 
@@ -29,15 +28,12 @@ namespace RGBSelcer.ViewModels
             LoginCommand = new AsyncRelayCommand(LoginAsync);
         }
 
-        private async Task LoginAsync()
+        private async System.Threading.Tasks.Task LoginAsync()
         {
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
-            IsLoading = true;
 
             var (success, message) = await _authService.LoginAsync(Login, Password);
-
-            IsLoading = false;
 
             if (success)
                 SuccessMessage = message;

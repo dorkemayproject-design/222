@@ -3,27 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="Views/LoginWindow.xaml">
     <Application.Resources>
-        <Style x:Key="HeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="32"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,20,0,10"/>
-        </Style>
-
-        <Style x:Key="SubHeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Margin" Value="0,10,0,5"/>
-        </Style>
 
         <Style x:Key="PrimaryButton" TargetType="Button">
-            <Setter Property="Background" Value="#FF7B2FEF"/>
+            <Setter Property="Background" Value="#FF6C2BD9"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="20,10"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="18,10"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
             <Setter Property="RenderTransform">
@@ -34,26 +20,20 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}"
-                                CornerRadius="10"
-                                Padding="{TemplateBinding Padding}"
-                                Effect="{x:Null}">
+                        <Border x:Name="Bg" CornerRadius="10" Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="1" BlurRadius="4" Opacity="0.15"/>
+                            </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF9B30FF"/>
-                                <Setter TargetName="ButtonBorder" Property="Effect">
+                                <Setter TargetName="Bg" Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Color="#FF9B30FF" ShadowDepth="0" BlurRadius="15" Opacity="0.6"/>
+                                        <DropShadowEffect ShadowDepth="0" BlurRadius="18" Opacity="0.5" Color="#BB86FC"/>
                                     </Setter.Value>
                                 </Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF5A1FAF"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#FFB0B0B0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -64,9 +44,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                             To="1.05" Duration="0:0:0.15"/>
+                                             To="1.03" Duration="0:0:0.12"/>
                             <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                             To="1.05" Duration="0:0:0.15"/>
+                                             To="1.03" Duration="0:0:0.12"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
@@ -74,133 +54,34 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                             To="1.0" Duration="0:0:0.15"/>
+                                             To="1.0" Duration="0:0:0.12"/>
                             <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                             To="1.0" Duration="0:0:0.15"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="Button.Click">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                             To="0.93" Duration="0:0:0.05" AutoReverse="True"/>
-                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                             To="0.93" Duration="0:0:0.05" AutoReverse="True"/>
+                                             To="1.0" Duration="0:0:0.12"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#FFD94A4A"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}"
-                                CornerRadius="10"
-                                Padding="{TemplateBinding Padding}"
-                                Effect="{x:Null}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FFC83A3A"/>
-                                <Setter TargetName="ButtonBorder" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="#FFD94A4A" ShadowDepth="0" BlurRadius="15" Opacity="0.6"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF982A2A"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#FF4AD94A"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}"
-                                CornerRadius="10"
-                                Padding="{TemplateBinding Padding}"
-                                Effect="{x:Null}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF3AC83A"/>
-                                <Setter TargetName="ButtonBorder" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="#FF4AD94A" ShadowDepth="0" BlurRadius="15" Opacity="0.6"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF2A982A"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Background" Value="#FF388E3C"/>
         </Style>
 
-        <Style x:Key="InputTextBox" TargetType="TextBox">
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="Margin" Value="0,5"/>
-            <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
-            <Setter Property="BorderThickness" Value="1"/>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#FFD32F2F"/>
         </Style>
 
-        <Style x:Key="InputPasswordBox" TargetType="PasswordBox">
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="Margin" Value="0,5"/>
-            <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
-
-        <Style x:Key="FormLabel" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,10,0,2"/>
-            <Setter Property="Foreground" Value="#FF555555"/>
+        <Style x:Key="SubHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#FF333333"/>
         </Style>
 
         <Style x:Key="ErrorText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="#FFD94A4A"/>
-            <Setter Property="Margin" Value="0,5"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Foreground" Value="#FFD32F2F"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
 
-        <Style x:Key="LinkButton" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="#FF9B30FF"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <TextBlock Text="{TemplateBinding Content}"
-                                   Foreground="{TemplateBinding Foreground}"
-                                   TextDecorations="Underline"/>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#FF2A5B98"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Application.Resources>
 </Application>
