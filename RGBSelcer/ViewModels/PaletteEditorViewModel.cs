@@ -123,6 +123,20 @@ namespace RGBSelcer.ViewModels
             }
         }
 
+        public async Task UpdateColorAsync(int colorId, string name, byte r, byte g, byte b)
+        {
+            try
+            {
+                await _paletteService.UpdateColorAsync(colorId, name, r, g, b);
+                await LoadPaletteAsync();
+                SuccessMessage = "Цвет обновлён!";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Ошибка обновления цвета: {ex.Message}";
+            }
+        }
+
         private async Task DeleteColorAsync()
         {
             if (SelectedColor == null)

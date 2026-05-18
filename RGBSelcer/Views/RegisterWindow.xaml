@@ -55,7 +55,6 @@
                            Visibility="{Binding SuccessMessage, Converter={StaticResource StringToVis}}"/>
 
                 <Button Content="Зарегистрироваться" Style="{StaticResource SuccessButton}"
-                        Command="{Binding RegisterCommand}"
                         Margin="0,15,0,5" HorizontalAlignment="Stretch"
                         Click="RegisterButton_Click"/>
 

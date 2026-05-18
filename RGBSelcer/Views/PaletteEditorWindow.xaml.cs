@@ -47,9 +47,7 @@ namespace RGBSelcer.Views
             if (picker.ShowDialog() == true)
             {
                 var vm = picker.ViewModel;
-                var service = new Services.PaletteService();
-                await service.UpdateColorAsync(color.Id, vm.ColorName, vm.Red, vm.Green, vm.Blue);
-                await _viewModel.LoadPaletteAsync();
+                await _viewModel.UpdateColorAsync(color.Id, vm.ColorName, vm.Red, vm.Green, vm.Blue);
             }
         }
     }

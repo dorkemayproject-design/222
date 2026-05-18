@@ -50,7 +50,6 @@
                            Visibility="{Binding SuccessMessage, Converter={StaticResource StringToVis}}"/>
 
                 <Button Content="Войти" Style="{StaticResource PrimaryButton}"
-                        Command="{Binding LoginCommand}"
                         Margin="0,15,0,5" HorizontalAlignment="Stretch"
                         Click="LoginButton_Click"/>
 
