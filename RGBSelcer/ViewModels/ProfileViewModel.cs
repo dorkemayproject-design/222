@@ -1,6 +1,8 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using RGBSelcer.Models;
 using RGBSelcer.Services;
 
 namespace RGBSelcer.ViewModels
@@ -38,6 +40,13 @@ namespace RGBSelcer.ViewModels
             set => SetProperty(ref _colorCount, value);
         }
 
+        private ObservableCollection<ColorPalette> _userPalettes = new();
+        public ObservableCollection<ColorPalette> UserPalettes
+        {
+            get => _userPalettes;
+            set => SetProperty(ref _userPalettes, value);
+        }
+
         private string _oldPassword = string.Empty;
         public string OldPassword
         {
@@ -73,6 +82,9 @@ namespace RGBSelcer.ViewModels
                 var (paletteCount, colorCount) = await _paletteService.GetUserStatsAsync(AuthService.CurrentUser.Id);
                 PaletteCount = paletteCount;
                 ColorCount = colorCount;
+
+                var palettes = await _paletteService.GetUserPalettesAsync(AuthService.CurrentUser.Id);
+                UserPalettes = new ObservableCollection<ColorPalette>(palettes);
             }
             catch (Exception ex)
             {

@@ -64,6 +64,7 @@ namespace RGBSelcer.ViewModels
         public AsyncRelayCommand ExportTxtCommand { get; }
         public AsyncRelayCommand ImportJsonCommand { get; }
         public AsyncRelayCommand ImportCsvCommand { get; }
+        public AsyncRelayCommand DeleteFileCommand { get; }
 
         public MainViewModel()
         {
@@ -75,6 +76,7 @@ namespace RGBSelcer.ViewModels
             ExportTxtCommand = new AsyncRelayCommand(ExportToTxtAsync);
             ImportJsonCommand = new AsyncRelayCommand(ImportFromJsonAsync);
             ImportCsvCommand = new AsyncRelayCommand(ImportFromCsvAsync);
+            DeleteFileCommand = new AsyncRelayCommand(DeleteFileAsync);
 
             if (AuthService.CurrentUser != null)
                 UserName = AuthService.CurrentUser.Login;
@@ -254,6 +256,37 @@ namespace RGBSelcer.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 await ImportWithProgressAsync(dialog.FileName, false);
+            }
+        }
+
+        private async Task DeleteFileAsync()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Все файлы (*.*)|*.*|JSON (*.json)|*.json|CSV (*.csv)|*.csv|TXT (*.txt)|*.txt",
+                Title = "Выберите файл для удаления"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var result = MessageBox.Show(
+                    $"Удалить файл \"{System.IO.Path.GetFileName(dialog.FileName)}\"?",
+                    "Подтверждение удаления",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        await _fileService.DeleteFileAsync(dialog.FileName);
+                        StatusText = $"Файл удалён: {System.IO.Path.GetFileName(dialog.FileName)}";
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage = $"Ошибка удаления файла: {ex.Message}";
+                    }
+                }
             }
         }
 

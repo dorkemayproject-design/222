@@ -4,7 +4,7 @@
         xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
         xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
         xmlns:converters="clr-namespace:RGBSelcer.Converters"
-        Title="RGB SELCER — Личный кабинет" Height="550" Width="450"
+        Title="RGB SELCER — Личный кабинет" Height="700" Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Background="#FFF5F5F5">
@@ -98,8 +98,31 @@
             </StackPanel>
         </Border>
 
+        <!-- Мои палитры -->
+        <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,15"
+                BorderBrush="#FFDDDDDD" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Мои палитры (персональные данные)" Style="{StaticResource SubHeaderStyle}"/>
+                <Separator Margin="0,5,0,10"/>
+                <ListBox ItemsSource="{Binding UserPalettes}" MaxHeight="120"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                <TextBlock Text="{Binding Colors.Count, StringFormat='({0} цветов)'}"
+                                           Foreground="#FF888888"/>
+                                <TextBlock Text="{Binding UpdatedAt, StringFormat=' — {0:dd.MM.yyyy}'}"
+                                           Foreground="#FFAAAAAA"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+
         <!-- Кнопка закрытия -->
-        <Button Grid.Row="3" Content="Закрыть" Style="{StaticResource PrimaryButton}"
+        <Button Grid.Row="4" Content="Закрыть" Style="{StaticResource PrimaryButton}"
                 Click="CloseButton_Click" HorizontalAlignment="Center" Padding="30,10"/>
     </Grid>
 </Window>

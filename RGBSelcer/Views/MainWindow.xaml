@@ -104,6 +104,14 @@
                     <Button Content="Импорт из CSV" Style="{StaticResource PrimaryButton}"
                             Command="{Binding ImportCsvCommand}"
                             HorizontalAlignment="Stretch" Margin="0,3"/>
+
+                    <Separator Margin="0,15,0,10"/>
+
+                    <TextBlock Text="Файлы" Style="{StaticResource SubHeaderStyle}" FontSize="16"/>
+
+                    <Button Content="Удалить файл" Style="{StaticResource DangerButton}"
+                            Command="{Binding DeleteFileCommand}"
+                            HorizontalAlignment="Stretch" Margin="0,3"/>
                 </StackPanel>
             </Border>
 
