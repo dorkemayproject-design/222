@@ -27,7 +27,13 @@
         </Grid.RowDefinitions>
 
         <!-- Заголовок -->
-        <Border Grid.Row="0" Background="#FF4A90D9" CornerRadius="8" Padding="15,10" Margin="0,0,0,15">
+        <Border Grid.Row="0" CornerRadius="8" Padding="15,10" Margin="0,0,0,15">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                    <GradientStop Color="#FF9B30FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <StackPanel>
                 <TextBlock Text="RGB SELCER" FontSize="24" FontWeight="Bold" Foreground="White"/>
                 <TextBlock Text="Личный кабинет" FontSize="14" Foreground="#CCFFFFFF"/>

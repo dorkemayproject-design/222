@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using RGBSelcer.Services;
 using RGBSelcer.ViewModels;
 
@@ -29,6 +30,16 @@ namespace RGBSelcer.Views
             var registerWindow = new RegisterWindow();
             registerWindow.Show();
             Close();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
         }
     }
 }

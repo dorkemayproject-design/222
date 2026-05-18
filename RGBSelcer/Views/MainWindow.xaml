@@ -26,7 +26,14 @@
         </Grid.RowDefinitions>
 
         <!-- Верхняя панель -->
-        <Border Grid.Row="0" Background="#FF4A90D9" Padding="15,10">
+        <Border Grid.Row="0" Padding="15,10">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                    <GradientStop Color="#FF9B30FF" Offset="0.5"/>
+                    <GradientStop Color="#FF7B2FEF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
