@@ -5,7 +5,8 @@
         xmlns:converters="clr-namespace:RGBSelcer.Converters"
         xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="SELCER ROYALITY PRM — Каталог" Height="850" Width="1280"
+        Title="SELCER ROYALITY PRM — Каталог"
+        WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         Background="#FFF0F0F5"
         BorderBrush="#FF6C2BD9" BorderThickness="2"
@@ -91,6 +92,8 @@
     </Window.Resources>
 
     <Grid>
+        <!-- Main content layer -->
+        <Grid x:Name="MainContent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -332,5 +335,173 @@
                            VerticalAlignment="Center" Margin="0"/>
             </Grid>
         </Border>
+        </Grid>
+
+        <!-- Top-Up Overlay Panel -->
+        <Grid x:Name="TopUpOverlay" Visibility="Collapsed" Opacity="0">
+            <!-- Dark background -->
+            <Border Background="#88000000" MouseLeftButtonDown="CloseTopUpOverlay_Click"/>
+
+            <!-- Slide-in panel from right -->
+            <Border x:Name="TopUpPanel" HorizontalAlignment="Right" Width="420"
+                    Background="#FFF8F5FF" CornerRadius="20,0,0,20"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="TopUpPanelTranslate" X="450"/>
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="-5" BlurRadius="25" Opacity="0.3" Direction="180"/>
+                </Border.Effect>
+
+                <Grid Margin="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Panel Header -->
+                    <Border Grid.Row="0" Padding="25,20" CornerRadius="20,0,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                                <GradientStop Color="#FF9B30FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <TextBlock Text="Пополнение баланса" FontSize="22" FontWeight="Black"
+                                       Foreground="White" VerticalAlignment="Center"/>
+                            <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    FontSize="18" Foreground="White" Background="Transparent"
+                                    BorderThickness="0" Cursor="Hand" Click="CloseTopUpPanel_Click"
+                                    Padding="8,4"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Panel Content -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="25,20">
+                            <!-- Current Balance -->
+                            <Border CornerRadius="14" Padding="20" Margin="0,0,0,20" Background="White">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Текущий баланс" FontSize="13" Foreground="#FF888888"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="OverlayBalanceText" FontSize="30" FontWeight="Black"
+                                               Foreground="#FF6C2BD9" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card Info -->
+                            <Border CornerRadius="14" Padding="22" Background="White">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="Данные карты Visa" FontSize="17" FontWeight="Bold"
+                                               Margin="0,0,0,15"/>
+
+                                    <TextBlock Text="Номер карты:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="OverlayCardNumber" FontSize="15" Padding="12,10"
+                                             MaxLength="19" Margin="0,0,0,14"
+                                             TextChanged="OverlayCardNumber_TextChanged">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="10"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Срок (ММ/ГГ):" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                            <TextBox x:Name="OverlayExpiry" FontSize="15" Padding="12,10" MaxLength="5">
+                                                <TextBox.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="CornerRadius" Value="10"/>
+                                                    </Style>
+                                                </TextBox.Resources>
+                                            </TextBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="CVV:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                            <PasswordBox x:Name="OverlayCvv" FontSize="15" Padding="12,10" MaxLength="3"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Text="Сумма пополнения (₽):" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="OverlayAmount" FontSize="15" Padding="12,10" Margin="0,0,0,8">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="10"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+
+                                    <!-- Quick amounts -->
+                                    <WrapPanel Margin="0,5,0,18" HorizontalAlignment="Center">
+                                        <Button Content="50 000" Tag="50000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="100 000" Tag="100000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="500 000" Tag="500000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="1 000 000" Tag="1000000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="5 000 000" Tag="5000000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                    </WrapPanel>
+
+                                    <TextBlock x:Name="OverlayError" FontSize="12" Foreground="#FFD32F2F"
+                                               FontWeight="SemiBold" Margin="0,0,0,12" TextWrapping="Wrap"
+                                               Visibility="Collapsed"/>
+
+                                    <Button Content="ПОПОЛНИТЬ" Click="OverlayTopUp_Click"
+                                            FontSize="16" FontWeight="Bold" Foreground="White"
+                                            Padding="20,14" Cursor="Hand" HorizontalAlignment="Stretch">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Bg" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                            <GradientStop Color="#FF388E3C" Offset="0"/>
+                                                            <GradientStop Color="#FF4CAF50" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="#AA388E3C" ShadowDepth="0" BlurRadius="12" Opacity="0.4"/>
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bg" Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="#CC4CAF50" ShadowDepth="0" BlurRadius="25" Opacity="0.7"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
