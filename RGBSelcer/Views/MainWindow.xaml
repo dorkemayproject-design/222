@@ -206,14 +206,14 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="Экспорт JSON" Style="{StaticResource ActionButton}"
-                            Background="#FF388E3C" Command="{Binding ExportJsonCommand}"/>
-                    <Button Content="Экспорт CSV" Style="{StaticResource ActionButton}"
-                            Background="#FF1976D2" Command="{Binding ExportCsvCommand}" Margin="5,3"/>
-                    <Button Content="Экспорт TXT" Style="{StaticResource ActionButton}"
-                            Background="#FFF57C00" Command="{Binding ExportTxtCommand}"/>
-                    <Button Content="Удалить файл" Style="{StaticResource ActionButton}"
-                            Background="#FFD32F2F" Command="{Binding DeleteFileCommand}" Margin="5,3"/>
+                    <Border CornerRadius="8" Background="#11000000" Padding="10,5" Margin="0,0,8,0">
+                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="#FF666666"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Найдено авто:" FontSize="12" Foreground="#FF888888"
+                               VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBlock Text="{Binding Cars.Count}" FontSize="14" FontWeight="Bold"
+                               Foreground="#FF6C2BD9" VerticalAlignment="Center"/>
                 </StackPanel>
             </WrapPanel>
         </Border>
