@@ -19,6 +19,13 @@ namespace RGBSelcer
             using var context = new AppDbContext();
             context.Database.EnsureCreated();
 
+            try
+            {
+                context.Database.ExecuteSqlRaw(
+                    "ALTER TABLE Users ADD COLUMN Balance TEXT NOT NULL DEFAULT '0'");
+            }
+            catch { }
+
             if (!context.Users.Any(u => u.Login == "GURSKIY"))
             {
                 context.Users.Add(new User
