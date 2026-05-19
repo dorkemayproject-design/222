@@ -83,11 +83,11 @@
                                        FontWeight="Bold" Margin="0,0,0,10"/>
                             <TextBlock FontSize="14" Margin="0,3">
                                 <Run Text="Логин: " FontWeight="SemiBold"/>
-                                <Run Text="{Binding Login}"/>
+                                <Run Text="{Binding Login, Mode=OneWay}"/>
                             </TextBlock>
                             <TextBlock FontSize="14" Margin="0,3">
                                 <Run Text="Дата регистрации: " FontWeight="SemiBold"/>
-                                <Run Text="{Binding RegisteredAt}"/>
+                                <Run Text="{Binding RegisteredAt, Mode=OneWay}"/>
                             </TextBlock>
                         </StackPanel>
 
@@ -96,14 +96,14 @@
                                 <TextBlock FontSize="13" Foreground="#FF6C2BD9" FontWeight="Bold"
                                            TextAlignment="Center">
                                     <Run Text="Покупок: "/>
-                                    <Run Text="{Binding PurchaseCount}"/>
+                                    <Run Text="{Binding PurchaseCount, Mode=OneWay}"/>
                                 </TextBlock>
                             </Border>
                             <Border CornerRadius="8" Padding="15,10" Background="#FFE8F5E9">
                                 <TextBlock FontSize="13" Foreground="#FF388E3C" FontWeight="Bold"
                                            TextAlignment="Center">
                                     <Run Text="Потрачено: "/>
-                                    <Run Text="{Binding TotalSpent}"/>
+                                    <Run Text="{Binding TotalSpent, Mode=OneWay}"/>
                                 </TextBlock>
                             </Border>
                         </StackPanel>

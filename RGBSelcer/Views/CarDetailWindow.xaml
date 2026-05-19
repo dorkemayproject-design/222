@@ -144,14 +144,14 @@
                 <!-- Right: Specs -->
                 <StackPanel Grid.Column="1">
                     <TextBlock FontSize="28" FontWeight="Black" Margin="0,0,0,3">
-                        <Run Text="{Binding Brand}"/>
+                        <Run Text="{Binding Brand, Mode=OneWay}"/>
                         <Run Text=" "/>
-                        <Run Text="{Binding Model}"/>
+                        <Run Text="{Binding Model, Mode=OneWay}"/>
                     </TextBlock>
                     <TextBlock FontSize="15" Foreground="#FF888888" Margin="0,0,0,15">
-                        <Run Text="{Binding Year}"/>
+                        <Run Text="{Binding Year, Mode=OneWay}"/>
                         <Run Text=" | "/>
-                        <Run Text="{Binding Country}"/>
+                        <Run Text="{Binding Country, Mode=OneWay}"/>
                     </TextBlock>
 
                     <!-- License Badge -->
@@ -203,76 +203,76 @@
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Мощность: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding HorsePower}"/>
+                                    <Run Text="{Binding HorsePower, Mode=OneWay}"/>
                                     <Run Text=" л.с."/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="Макс. скорость: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding MaxSpeedKmh}"/>
+                                    <Run Text="{Binding MaxSpeedKmh, Mode=OneWay}"/>
                                     <Run Text=" км/ч"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Двигатель: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding EngineType}"/>
+                                    <Run Text="{Binding EngineType, Mode=OneWay}"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="Объём: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding EngineVolume}"/>
+                                    <Run Text="{Binding EngineVolume, Mode=OneWay}"/>
                                     <Run Text=" л"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Разгон 0-100: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding Acceleration0to100}"/>
+                                    <Run Text="{Binding Acceleration0to100, Mode=OneWay}"/>
                                     <Run Text=" сек"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="КПП: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding Transmission}"/>
+                                    <Run Text="{Binding Transmission, Mode=OneWay}"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Топливо: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding FuelType}"/>
+                                    <Run Text="{Binding FuelType, Mode=OneWay}"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="Расход: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding FuelConsumption}"/>
+                                    <Run Text="{Binding FuelConsumption, Mode=OneWay}"/>
                                     <Run Text=" л/100км"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Привод: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding DriveType}"/>
+                                    <Run Text="{Binding DriveType, Mode=OneWay}"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="4" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="Масса: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding Weight}"/>
+                                    <Run Text="{Binding Weight, Mode=OneWay}"/>
                                     <Run Text=" кг"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Мест: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding Seats}"/>
+                                    <Run Text="{Binding Seats, Mode=OneWay}"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="Цвет: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding Color}"/>
+                                    <Run Text="{Binding Color, Mode=OneWay}"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4" FontSize="13">
                                     <Run Text="Кузов: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding BodyType}"/>
+                                    <Run Text="{Binding BodyType, Mode=OneWay}"/>
                                 </TextBlock>
                                 <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4" FontSize="13">
                                     <Run Text="Страна: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding Country}"/>
+                                    <Run Text="{Binding Country, Mode=OneWay}"/>
                                 </TextBlock>
 
                                 <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4" FontSize="13">
                                     <Run Text="Категория прав: " FontWeight="SemiBold"/>
-                                    <Run Text="{Binding CategoryDisplay}"/>
+                                    <Run Text="{Binding CategoryDisplay, Mode=OneWay}"/>
                                 </TextBlock>
                             </Grid>
                         </StackPanel>

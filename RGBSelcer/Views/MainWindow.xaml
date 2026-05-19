@@ -236,30 +236,30 @@
                                 <!-- Info Panel -->
                                 <StackPanel Grid.Row="1" Margin="14,10,14,14">
                                     <TextBlock FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis">
-                                        <Run Text="{Binding Brand}"/>
+                                        <Run Text="{Binding Brand, Mode=OneWay}"/>
                                         <Run Text=" "/>
-                                        <Run Text="{Binding Model}"/>
+                                        <Run Text="{Binding Model, Mode=OneWay}"/>
                                     </TextBlock>
                                     <TextBlock FontSize="11" Foreground="#FF888888" Margin="0,2,0,6">
-                                        <Run Text="{Binding Year}"/>
+                                        <Run Text="{Binding Year, Mode=OneWay}"/>
                                         <Run Text=" | "/>
-                                        <Run Text="{Binding BodyType}"/>
+                                        <Run Text="{Binding BodyType, Mode=OneWay}"/>
                                         <Run Text=" | "/>
-                                        <Run Text="{Binding Country}"/>
+                                        <Run Text="{Binding Country, Mode=OneWay}"/>
                                     </TextBlock>
 
                                     <WrapPanel Margin="0,0,0,6">
                                         <Border CornerRadius="4" Padding="6,2" Margin="0,0,5,3"
                                                 Background="#FFEDE7F6">
                                             <TextBlock FontSize="10" Foreground="#FF6C2BD9" FontWeight="Bold">
-                                                <Run Text="{Binding HorsePower}"/>
+                                                <Run Text="{Binding HorsePower, Mode=OneWay}"/>
                                                 <Run Text=" л.с."/>
                                             </TextBlock>
                                         </Border>
                                         <Border CornerRadius="4" Padding="6,2" Margin="0,0,5,3"
                                                 Background="#FFE3F2FD">
                                             <TextBlock FontSize="10" Foreground="#FF1976D2" FontWeight="Bold">
-                                                <Run Text="{Binding MaxSpeedKmh}"/>
+                                                <Run Text="{Binding MaxSpeedKmh, Mode=OneWay}"/>
                                                 <Run Text=" км/ч"/>
                                             </TextBlock>
                                         </Border>
