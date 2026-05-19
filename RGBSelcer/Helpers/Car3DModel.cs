@@ -19,7 +19,6 @@ namespace RGBSelcer.Helpers
             foreach (var p in _positions) mesh.Positions.Add(p);
             foreach (var n in _normals) mesh.Normals.Add(n);
             foreach (var i in _indices) mesh.TriangleIndices.Add(i);
-            mesh.Freeze();
             return mesh;
         }
 
@@ -184,6 +183,8 @@ namespace RGBSelcer.Helpers
         private double _angle;
         private bool _isRendering;
         private RotateTransform3D? _rotateTransform;
+        private static int _activeRenderCount;
+        private const int MaxActiveRenderers = 5;
 
         public Car3DModel()
         {
@@ -191,22 +192,32 @@ namespace RGBSelcer.Helpers
             RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
+            IsVisibleChanged += OnVisibilityChanged;
         }
 
         private static void OnCarTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is Car3DModel model && model.IsLoaded)
             {
-                model.Children.Clear();
-                model.BuildScene();
-                model.StartRendering();
+                try
+                {
+                    model.StopRendering();
+                    model.Children.Clear();
+                    model.BuildScene();
+                    model.StartRendering();
+                }
+                catch { }
             }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            BuildScene();
-            StartRendering();
+            try
+            {
+                BuildScene();
+                StartRendering();
+            }
+            catch { }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -214,11 +225,20 @@ namespace RGBSelcer.Helpers
             StopRendering();
         }
 
+        private void OnVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (IsVisible && IsLoaded && !_isRendering && Children.Count > 0)
+                StartRendering();
+            else if (!IsVisible)
+                StopRendering();
+        }
+
         private void StartRendering()
         {
-            if (!_isRendering)
+            if (!_isRendering && _activeRenderCount < MaxActiveRenderers)
             {
                 _isRendering = true;
+                _activeRenderCount++;
                 CompositionTarget.Rendering += OnRendering;
             }
         }
@@ -228,17 +248,25 @@ namespace RGBSelcer.Helpers
             if (_isRendering)
             {
                 _isRendering = false;
+                _activeRenderCount--;
                 CompositionTarget.Rendering -= OnRendering;
             }
         }
 
         private void OnRendering(object? sender, EventArgs e)
         {
-            if (_rotateTransform?.Rotation is AxisAngleRotation3D rotation)
+            try
             {
-                _angle += 1.2;
-                if (_angle >= 360) _angle -= 360;
-                rotation.Angle = _angle;
+                if (_rotateTransform?.Rotation is AxisAngleRotation3D rotation)
+                {
+                    _angle += 1.2;
+                    if (_angle >= 360) _angle -= 360;
+                    rotation.Angle = _angle;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                StopRendering();
             }
         }
 
