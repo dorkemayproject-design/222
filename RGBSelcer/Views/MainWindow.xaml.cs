@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -62,10 +63,95 @@ namespace RGBSelcer.Views
             }
         }
 
-        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        private async void ProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            var profileWindow = new ProfileWindow();
-            profileWindow.ShowDialog();
+            await ShowProfilePanel();
+        }
+
+        private async Task ShowProfilePanel()
+        {
+            if (AuthService.CurrentUser != null)
+            {
+                ProfileLogin.Text = $"Логин: {AuthService.CurrentUser.Login}";
+                ProfileDate.Text = $"Регистрация: {AuthService.CurrentUser.CreatedAt:dd.MM.yyyy HH:mm}";
+
+                try
+                {
+                    var carService = new CarService();
+                    var (_, purchaseCount, totalSpent) =
+                        await carService.GetUserStatsAsync(AuthService.CurrentUser.Id);
+                    ProfilePurchaseCount.Text = $"Покупок: {purchaseCount}";
+                    ProfileTotalSpent.Text = $"Потрачено: {totalSpent:N0} ₽";
+
+                    var purchases = await carService.GetUserPurchasesAsync(AuthService.CurrentUser.Id);
+                    ProfilePurchasesGrid.ItemsSource = purchases;
+                }
+                catch { }
+            }
+
+            ProfileOverlay.Visibility = Visibility.Visible;
+
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(250))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            ProfileOverlay.BeginAnimation(OpacityProperty, fadeIn);
+
+            var slideIn = new DoubleAnimation(-500, 0, TimeSpan.FromMilliseconds(350))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            ProfilePanelTranslate.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, slideIn);
+        }
+
+        private void HideProfilePanel()
+        {
+            var slideOut = new DoubleAnimation(0, -500, TimeSpan.FromMilliseconds(250))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(200))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            fadeOut.Completed += (_, _) => ProfileOverlay.Visibility = Visibility.Collapsed;
+
+            ProfilePanelTranslate.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, slideOut);
+            ProfileOverlay.BeginAnimation(OpacityProperty, fadeOut);
+        }
+
+        private void CloseProfileOverlay_Click(object sender, MouseButtonEventArgs e)
+        {
+            HideProfilePanel();
+        }
+
+        private void CloseProfilePanel_Click(object sender, RoutedEventArgs e)
+        {
+            HideProfilePanel();
+        }
+
+        private async void ProfileChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            ProfilePasswordError.Visibility = Visibility.Collapsed;
+            ProfilePasswordSuccess.Visibility = Visibility.Collapsed;
+
+            var authService = new AuthService();
+            var (success, message) = await authService.ChangePasswordAsync(
+                ProfileOldPassword.Password, ProfileNewPassword.Password);
+
+            if (success)
+            {
+                ProfilePasswordSuccess.Text = message;
+                ProfilePasswordSuccess.Visibility = Visibility.Visible;
+                ProfileOldPassword.Clear();
+                ProfileNewPassword.Clear();
+            }
+            else
+            {
+                ProfilePasswordError.Text = message;
+                ProfilePasswordError.Visibility = Visibility.Visible;
+            }
         }
 
         private void TopUpButton_Click(object sender, RoutedEventArgs e)

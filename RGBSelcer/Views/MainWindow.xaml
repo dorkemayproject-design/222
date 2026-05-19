@@ -503,5 +503,152 @@
                 </Grid>
             </Border>
         </Grid>
+        <!-- Profile Overlay Panel -->
+        <Grid x:Name="ProfileOverlay" Visibility="Collapsed" Opacity="0">
+            <!-- Dark background -->
+            <Border Background="#88000000" MouseLeftButtonDown="CloseProfileOverlay_Click"/>
+
+            <!-- Slide-in panel from left -->
+            <Border x:Name="ProfilePanel" HorizontalAlignment="Left" Width="480"
+                    Background="#FFF8F5FF" CornerRadius="0,20,20,0"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="ProfilePanelTranslate" X="-500"/>
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="5" BlurRadius="25" Opacity="0.3" Direction="0"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Panel Header -->
+                    <Border Grid.Row="0" Padding="25,20" CornerRadius="0,20,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                                <GradientStop Color="#FF9B30FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Личный кабинет" FontSize="22" FontWeight="Black"
+                                           Foreground="White"/>
+                            </StackPanel>
+                            <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    FontSize="18" Foreground="White" Background="Transparent"
+                                    BorderThickness="0" Cursor="Hand" Click="CloseProfilePanel_Click"
+                                    Padding="8,4"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Panel Content -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="25,20">
+                            <!-- User Info -->
+                            <Border CornerRadius="14" Background="White" Padding="20" Margin="0,0,0,15">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="Информация" FontSize="17" FontWeight="Bold" Margin="0,0,0,12"/>
+                                    <TextBlock x:Name="ProfileLogin" FontSize="14" Margin="0,3"/>
+                                    <TextBlock x:Name="ProfileDate" FontSize="14" Margin="0,3"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Border CornerRadius="8" Padding="12,8" Background="#FFEDE7F6" Margin="0,0,10,0">
+                                            <TextBlock x:Name="ProfilePurchaseCount" FontSize="13"
+                                                       Foreground="#FF6C2BD9" FontWeight="Bold"/>
+                                        </Border>
+                                        <Border CornerRadius="8" Padding="12,8" Background="#FFE8F5E9">
+                                            <TextBlock x:Name="ProfileTotalSpent" FontSize="13"
+                                                       Foreground="#FF388E3C" FontWeight="Bold"/>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Change Password -->
+                            <Border CornerRadius="14" Background="White" Padding="20" Margin="0,0,0,15">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="Сменить пароль" FontSize="17" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                                    <TextBlock Text="Текущий пароль:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <PasswordBox x:Name="ProfileOldPassword" FontSize="14" Padding="10,8" Margin="0,0,0,12"/>
+
+                                    <TextBlock Text="Новый пароль:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <PasswordBox x:Name="ProfileNewPassword" FontSize="14" Padding="10,8" Margin="0,0,0,12"/>
+
+                                    <TextBlock x:Name="ProfilePasswordError" FontSize="12" Foreground="#FFD32F2F"
+                                               FontWeight="SemiBold" Margin="0,0,0,8" Visibility="Collapsed" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="ProfilePasswordSuccess" FontSize="12" Foreground="#FF388E3C"
+                                               FontWeight="SemiBold" Margin="0,0,0,8" Visibility="Collapsed" TextWrapping="Wrap"/>
+
+                                    <Button Content="Сменить пароль" Click="ProfileChangePassword_Click"
+                                            FontSize="14" FontWeight="SemiBold" Foreground="White"
+                                            Padding="18,10" Cursor="Hand" HorizontalAlignment="Left">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Bg" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                            <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                                                            <GradientStop Color="#FF9B30FF" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bg" Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="#CC9B30FF" ShadowDepth="0"
+                                                                                  BlurRadius="15" Opacity="0.5"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Purchase History -->
+                            <Border CornerRadius="14" Background="White" Padding="20">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="История покупок" FontSize="17" FontWeight="Bold" Margin="0,0,0,12"/>
+                                    <DataGrid x:Name="ProfilePurchasesGrid"
+                                              AutoGenerateColumns="False"
+                                              IsReadOnly="True"
+                                              SelectionMode="Single"
+                                              CanUserAddRows="False"
+                                              CanUserDeleteRows="False"
+                                              GridLinesVisibility="Horizontal"
+                                              HeadersVisibility="Column"
+                                              BorderThickness="1"
+                                              BorderBrush="#FFDDDDDD"
+                                              MaxHeight="300">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Автомобиль" Binding="{Binding Car.DisplayName}" Width="*"/>
+                                            <DataGridTextColumn Header="Сумма" Binding="{Binding PaidAmount, StringFormat={}{0:N0} ₽}" Width="120"/>
+                                            <DataGridTextColumn Header="Дата" Binding="{Binding DateFormatted}" Width="120"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
