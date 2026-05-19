@@ -4,6 +4,7 @@
         xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
         xmlns:converters="clr-namespace:RGBSelcer.Converters"
         xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         Title="SELCER ROYALITY PRM — Каталог" Height="800" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="#FFF0F0F5">
@@ -152,9 +153,9 @@
                     <TextBlock Text="Категория:" VerticalAlignment="Center" FontWeight="SemiBold"
                                Margin="0,0,8,0" FontSize="13"/>
                     <ComboBox SelectedItem="{Binding SelectedCategory}" Style="{StaticResource FilterCombo}">
-                        <ComboBoxItem Content="Все"/>
-                        <ComboBoxItem Content="A"/>
-                        <ComboBoxItem Content="B"/>
+                        <sys:String>Все</sys:String>
+                        <sys:String>A</sys:String>
+                        <sys:String>B</sys:String>
                     </ComboBox>
                 </StackPanel>
 
@@ -162,18 +163,18 @@
                     <TextBlock Text="Кузов:" VerticalAlignment="Center" FontWeight="SemiBold"
                                Margin="0,0,8,0" FontSize="13"/>
                     <ComboBox SelectedItem="{Binding SelectedBodyType}" Style="{StaticResource FilterCombo}">
-                        <ComboBoxItem Content="Все"/>
-                        <ComboBoxItem Content="Седан"/>
-                        <ComboBoxItem Content="Внедорожник"/>
-                        <ComboBoxItem Content="Кроссовер"/>
-                        <ComboBoxItem Content="Спорткар"/>
-                        <ComboBoxItem Content="Купе"/>
-                        <ComboBoxItem Content="Хэтчбек"/>
-                        <ComboBoxItem Content="Мотоцикл"/>
-                        <ComboBoxItem Content="Пикап"/>
-                        <ComboBoxItem Content="Суперкар"/>
-                        <ComboBoxItem Content="Гиперкар"/>
-                        <ComboBoxItem Content="Родстер"/>
+                        <sys:String>Все</sys:String>
+                        <sys:String>Седан</sys:String>
+                        <sys:String>Внедорожник</sys:String>
+                        <sys:String>Кроссовер</sys:String>
+                        <sys:String>Спорткар</sys:String>
+                        <sys:String>Купе</sys:String>
+                        <sys:String>Хэтчбек</sys:String>
+                        <sys:String>Мотоцикл</sys:String>
+                        <sys:String>Пикап</sys:String>
+                        <sys:String>Суперкар</sys:String>
+                        <sys:String>Гиперкар</sys:String>
+                        <sys:String>Родстер</sys:String>
                     </ComboBox>
                 </StackPanel>
 
