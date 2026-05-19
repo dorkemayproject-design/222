@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
 using RGBSelcer.Data;
 using RGBSelcer.Models;
@@ -12,6 +13,8 @@ namespace RGBSelcer
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
 
             using var context = new AppDbContext();
             context.Database.EnsureCreated();
@@ -31,6 +34,16 @@ namespace RGBSelcer
             {
                 SeedCars(context);
             }
+        }
+
+        private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(
+                $"Ошибка: {e.Exception.GetType().Name}\n\n{e.Exception.Message}\n\nStack Trace:\n{e.Exception.StackTrace}",
+                "SELCER ROYALITY PRM — Ошибка",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            e.Handled = true;
         }
 
         private static void SeedCars(AppDbContext context)

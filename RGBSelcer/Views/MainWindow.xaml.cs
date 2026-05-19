@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Input;
 using RGBSelcer.Helpers;
@@ -36,10 +37,19 @@ namespace RGBSelcer.Views
 
         private void CarCard_Click(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.DataContext is Car car)
+            try
             {
-                var detailWindow = new CarDetailWindow(car.Id);
-                detailWindow.ShowDialog();
+                if (sender is FrameworkElement element && element.DataContext is Car car)
+                {
+                    var detailWindow = new CarDetailWindow(car.Id);
+                    detailWindow.Owner = this;
+                    detailWindow.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка открытия карточки:\n{ex.GetType().Name}: {ex.Message}\n\n{ex.StackTrace}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

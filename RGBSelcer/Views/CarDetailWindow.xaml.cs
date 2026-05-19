@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using RGBSelcer.ViewModels;
 
@@ -10,7 +11,16 @@ namespace RGBSelcer.Views
 
         public CarDetailWindow(int carId)
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"XAML init error:\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                    "Debug", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
             _viewModel = (CarDetailViewModel)DataContext;
             _carId = carId;
             Loaded += CarDetailWindow_Loaded;
