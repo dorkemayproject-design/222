@@ -4,9 +4,11 @@
         xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
         xmlns:converters="clr-namespace:RGBSelcer.Converters"
         xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
-        Title="SELCER ROYALITY PRM — Детали" Height="720" Width="900"
+        Title="SELCER ROYALITY PRM — Детали" Height="750" Width="950"
         WindowStartupLocation="CenterScreen"
-        Background="#FFF5F0FF">
+        Background="#FFF5F0FF"
+        BorderBrush="#FF6C2BD9" BorderThickness="2"
+        FontFamily="Segoe UI">
 
     <Window.DataContext>
         <vm:CarDetailViewModel/>

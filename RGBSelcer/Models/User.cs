@@ -8,7 +8,10 @@ namespace RGBSelcer.Models
         public int Id { get; set; }
         public string Login { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
+        public decimal Balance { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public List<Purchase> Purchases { get; set; } = new();
+
+        public string BalanceFormatted => $"{Balance:N0} ₽";
     }
 }

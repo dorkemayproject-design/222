@@ -33,6 +33,7 @@ namespace RGBSelcer.Data
                 entity.HasIndex(e => e.Login).IsUnique();
                 entity.Property(e => e.Login).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PasswordHash).IsRequired();
+                entity.Property(e => e.Balance).HasColumnType("decimal(18,2)").HasDefaultValue(0m);
             });
 
             modelBuilder.Entity<Car>(entity =>

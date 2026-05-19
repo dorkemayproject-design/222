@@ -103,11 +103,24 @@ namespace RGBSelcer.ViewModels
             }
         }
 
+        private string _balanceText = "0 ₽";
+        public string BalanceText
+        {
+            get => _balanceText;
+            set => SetProperty(ref _balanceText, value);
+        }
+
         private ObservableCollection<string> _brands = new() { "Все" };
         public ObservableCollection<string> Brands
         {
             get => _brands;
             set => SetProperty(ref _brands, value);
+        }
+
+        public void UpdateBalance()
+        {
+            if (AuthService.CurrentUser != null)
+                BalanceText = AuthService.CurrentUser.BalanceFormatted;
         }
 
         public AsyncRelayCommand LoadCarsCommand { get; }

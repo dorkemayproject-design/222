@@ -18,7 +18,10 @@ namespace RGBSelcer.Views
             _viewModel = (MainViewModel)DataContext;
 
             if (AuthService.CurrentUser != null)
+            {
                 _viewModel.UserName = AuthService.CurrentUser.Login;
+                _viewModel.UpdateBalance();
+            }
 
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
@@ -44,6 +47,7 @@ namespace RGBSelcer.Views
                     var detailWindow = new CarDetailWindow(car.Id);
                     detailWindow.Owner = this;
                     detailWindow.ShowDialog();
+                    _viewModel.UpdateBalance();
                 }
             }
             catch (Exception ex)
@@ -57,6 +61,14 @@ namespace RGBSelcer.Views
         {
             var profileWindow = new ProfileWindow();
             profileWindow.ShowDialog();
+        }
+
+        private void TopUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var topUpWindow = new TopUpWindow();
+            topUpWindow.Owner = this;
+            topUpWindow.ShowDialog();
+            _viewModel.UpdateBalance();
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
