@@ -1,0 +1,654 @@
+<Window x:Class="RGBSelcer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:RGBSelcer.ViewModels"
+        xmlns:converters="clr-namespace:RGBSelcer.Converters"
+        xmlns:helpers="clr-namespace:RGBSelcer.Helpers"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="SELCER ROYALITY PRM — Каталог"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF0F0F5"
+        BorderBrush="#FF6C2BD9" BorderThickness="2"
+        FontFamily="Segoe UI">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <converters:StringToVisibilityConverter x:Key="StringToVis"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:PriceFormatter x:Key="PriceFmt"/>
+        <converters:StringToColorConverter x:Key="StrToColor"/>
+        <converters:BodyTypeToCarTypeConverter x:Key="BodyToCarType"/>
+        <converters:StringToMediaColorConverter x:Key="StrToMediaColor"/>
+
+        <Style x:Key="FilterCombo" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="0,3"/>
+            <Setter Property="MinWidth" Value="140"/>
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="Margin" Value="0,3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" CornerRadius="8" Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="1" BlurRadius="4" Opacity="0.2"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect ShadowDepth="0" BlurRadius="15" Opacity="0.5" Color="#BB86FC"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                             To="1.03" Duration="0:0:0.12"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                             To="1.03" Duration="0:0:0.12"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                             To="1.0" Duration="0:0:0.12"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                             To="1.0" Duration="0:0:0.12"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Main content layer -->
+        <Grid x:Name="MainContent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="18,12">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                    <GradientStop Color="#FF9B30FF" Offset="0.5"/>
+                    <GradientStop Color="#FF7B2FEF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <helpers:Car3DModel Width="50" Height="50" Margin="0,0,12,0" ClipToBounds="True"
+                                        CarType="sport" CarColor="#FFFF3030"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="SELCER ROYALITY PRM" FontSize="26" FontWeight="Black"
+                                   Foreground="White">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#FF3D0066" ShadowDepth="2" BlurRadius="8" Opacity="0.4"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                        <TextBlock Text="Премиальный автосалон — Все автомобили мира" FontSize="12"
+                                   Foreground="#CCFFFFFF" Margin="2,-2,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <!-- Balance Display -->
+                    <Border CornerRadius="10" Background="#22FFFFFF" Padding="12,6" Margin="0,0,12,0"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="💳 Баланс: " Foreground="#CCFFFFFF" FontSize="13"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding BalanceText}" Foreground="#FFFFFF" FontSize="14"
+                                       FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    <Button Content="＋ Пополнить" Style="{StaticResource ActionButton}"
+                            Background="#FF388E3C" Click="TopUpButton_Click" Margin="0,3,8,3"/>
+                    <TextBlock Text="{Binding UserName}" Foreground="White"
+                               FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <Button Content="Профиль" Style="{StaticResource ActionButton}"
+                            Background="#FF3A7BC8" Click="ProfileButton_Click"/>
+                    <Button Content="Выйти" Style="{StaticResource ActionButton}"
+                            Background="#FFD32F2F" Click="LogoutButton_Click" Margin="5,3,0,3"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Filters Row -->
+        <Border Grid.Row="1" Padding="15,10"
+                BorderBrush="#FFDDDDDD" BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                    <GradientStop Color="#FFF8F5FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <WrapPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                    <TextBlock Text="Поиск:" VerticalAlignment="Center" FontWeight="SemiBold"
+                               Margin="0,0,8,0" FontSize="13"/>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Width="220" Padding="8,6" FontSize="13"
+                             ToolTip="Введите марку, модель или страну"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                    <TextBlock Text="Категория:" VerticalAlignment="Center" FontWeight="SemiBold"
+                               Margin="0,0,8,0" FontSize="13"/>
+                    <ComboBox SelectedItem="{Binding SelectedCategory}" Style="{StaticResource FilterCombo}">
+                        <sys:String>Все</sys:String>
+                        <sys:String>A</sys:String>
+                        <sys:String>B</sys:String>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                    <TextBlock Text="Кузов:" VerticalAlignment="Center" FontWeight="SemiBold"
+                               Margin="0,0,8,0" FontSize="13"/>
+                    <ComboBox SelectedItem="{Binding SelectedBodyType}" Style="{StaticResource FilterCombo}">
+                        <sys:String>Все</sys:String>
+                        <sys:String>Седан</sys:String>
+                        <sys:String>Внедорожник</sys:String>
+                        <sys:String>Кроссовер</sys:String>
+                        <sys:String>Спорткар</sys:String>
+                        <sys:String>Купе</sys:String>
+                        <sys:String>Хэтчбек</sys:String>
+                        <sys:String>Мотоцикл</sys:String>
+                        <sys:String>Пикап</sys:String>
+                        <sys:String>Суперкар</sys:String>
+                        <sys:String>Гиперкар</sys:String>
+                        <sys:String>Родстер</sys:String>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                    <TextBlock Text="Марка:" VerticalAlignment="Center" FontWeight="SemiBold"
+                               Margin="0,0,8,0" FontSize="13"/>
+                    <ComboBox ItemsSource="{Binding Brands}" SelectedItem="{Binding SelectedBrand}"
+                              Style="{StaticResource FilterCombo}" MinWidth="160"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border CornerRadius="8" Background="#11000000" Padding="10,5" Margin="0,0,8,0">
+                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="#FF666666"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Найдено авто:" FontSize="12" Foreground="#FF888888"
+                               VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBlock Text="{Binding Cars.Count}" FontSize="14" FontWeight="Bold"
+                               Foreground="#FF6C2BD9" VerticalAlignment="Center"/>
+                </StackPanel>
+            </WrapPanel>
+        </Border>
+
+        <!-- Car Catalog Grid -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="10">
+            <ItemsControl ItemsSource="{Binding Cars}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="270" Margin="8" CornerRadius="14" Background="White"
+                                BorderBrush="#226C2BD9" BorderThickness="1.5" Cursor="Hand"
+                                MouseLeftButtonDown="CarCard_Click"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="3" BlurRadius="12" Opacity="0.1" Color="#6C2BD9"/>
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="160"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 3D Preview -->
+                                <Border Grid.Row="0" CornerRadius="12,12,0,0" ClipToBounds="True">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FFE8E0F0" Offset="0"/>
+                                            <GradientStop Color="#FFF5F0FF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <helpers:Car3DModel
+                                        CarType="{Binding BodyType, Converter={StaticResource BodyToCarType}}"
+                                        CarColor="{Binding Color, Converter={StaticResource StrToMediaColor}}"
+                                        ClipToBounds="True"/>
+                                </Border>
+
+                                <!-- Info Panel -->
+                                <StackPanel Grid.Row="1" Margin="14,10,14,14">
+                                    <TextBlock FontSize="16" FontWeight="Bold" TextTrimming="CharacterEllipsis">
+                                        <Run Text="{Binding Brand, Mode=OneWay}"/>
+                                        <Run Text=" "/>
+                                        <Run Text="{Binding Model, Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="11" Foreground="#FF888888" Margin="0,2,0,6">
+                                        <Run Text="{Binding Year, Mode=OneWay}"/>
+                                        <Run Text=" | "/>
+                                        <Run Text="{Binding BodyType, Mode=OneWay}"/>
+                                        <Run Text=" | "/>
+                                        <Run Text="{Binding Country, Mode=OneWay}"/>
+                                    </TextBlock>
+
+                                    <WrapPanel Margin="0,0,0,6">
+                                        <Border CornerRadius="4" Padding="6,2" Margin="0,0,5,3"
+                                                Background="#FFEDE7F6">
+                                            <TextBlock FontSize="10" Foreground="#FF6C2BD9" FontWeight="Bold">
+                                                <Run Text="{Binding HorsePower, Mode=OneWay}"/>
+                                                <Run Text=" л.с."/>
+                                            </TextBlock>
+                                        </Border>
+                                        <Border CornerRadius="4" Padding="6,2" Margin="0,0,5,3"
+                                                Background="#FFE3F2FD">
+                                            <TextBlock FontSize="10" Foreground="#FF1976D2" FontWeight="Bold">
+                                                <Run Text="{Binding MaxSpeedKmh, Mode=OneWay}"/>
+                                                <Run Text=" км/ч"/>
+                                            </TextBlock>
+                                        </Border>
+                                        <Border CornerRadius="4" Padding="6,2" Margin="0,0,5,3"
+                                                Background="#FFFFF3E0">
+                                            <TextBlock FontSize="10" Foreground="#FFF57C00" FontWeight="Bold"
+                                                       Text="{Binding LicenseCategory, StringFormat=Кат. {0}}"/>
+                                        </Border>
+                                    </WrapPanel>
+
+                                    <TextBlock FontSize="18" FontWeight="Black" Foreground="#FF6C2BD9"
+                                               Text="{Binding Price, Converter={StaticResource PriceFmt}}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="White" Padding="12,8"
+                BorderBrush="#FFDDDDDD" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="{Binding StatusText}"
+                           FontSize="12" Foreground="#FF666666" VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <ProgressBar Value="{Binding ProgressValue}" Minimum="0" Maximum="100"
+                                 Width="200" Height="18" Margin="0,0,10,0"
+                                 Visibility="{Binding IsProgressVisible, Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Text="{Binding ProgressValue, StringFormat={}{0}%}"
+                               Visibility="{Binding IsProgressVisible, Converter={StaticResource BoolToVis}}"
+                               VerticalAlignment="Center" FontSize="12"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="0" Text="{Binding ErrorMessage}"
+                           Foreground="#FFD32F2F" FontWeight="SemiBold" FontSize="12"
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVis}}"
+                           VerticalAlignment="Center" Margin="0"/>
+            </Grid>
+        </Border>
+        </Grid>
+
+        <!-- Top-Up Overlay Panel -->
+        <Grid x:Name="TopUpOverlay" Visibility="Collapsed" Opacity="0">
+            <!-- Dark background -->
+            <Border Background="#88000000" MouseLeftButtonDown="CloseTopUpOverlay_Click"/>
+
+            <!-- Slide-in panel from right -->
+            <Border x:Name="TopUpPanel" HorizontalAlignment="Right" Width="420"
+                    Background="#FFF8F5FF" CornerRadius="20,0,0,20"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="TopUpPanelTranslate" X="450"/>
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="-5" BlurRadius="25" Opacity="0.3" Direction="180"/>
+                </Border.Effect>
+
+                <Grid Margin="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Panel Header -->
+                    <Border Grid.Row="0" Padding="25,20" CornerRadius="20,0,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                                <GradientStop Color="#FF9B30FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <TextBlock Text="Пополнение баланса" FontSize="22" FontWeight="Black"
+                                       Foreground="White" VerticalAlignment="Center"/>
+                            <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    FontSize="18" Foreground="White" Background="Transparent"
+                                    BorderThickness="0" Cursor="Hand" Click="CloseTopUpPanel_Click"
+                                    Padding="8,4"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Panel Content -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="25,20">
+                            <!-- Current Balance -->
+                            <Border CornerRadius="14" Padding="20" Margin="0,0,0,20" Background="White">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Текущий баланс" FontSize="13" Foreground="#FF888888"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="OverlayBalanceText" FontSize="30" FontWeight="Black"
+                                               Foreground="#FF6C2BD9" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Card Info -->
+                            <Border CornerRadius="14" Padding="22" Background="White">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="Данные карты Visa" FontSize="17" FontWeight="Bold"
+                                               Margin="0,0,0,15"/>
+
+                                    <TextBlock Text="Номер карты:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="OverlayCardNumber" FontSize="15" Padding="12,10"
+                                             MaxLength="19" Margin="0,0,0,14"
+                                             TextChanged="OverlayCardNumber_TextChanged">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="10"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Срок (ММ/ГГ):" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                            <TextBox x:Name="OverlayExpiry" FontSize="15" Padding="12,10" MaxLength="5">
+                                                <TextBox.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="CornerRadius" Value="10"/>
+                                                    </Style>
+                                                </TextBox.Resources>
+                                            </TextBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="CVV:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                            <PasswordBox x:Name="OverlayCvv" FontSize="15" Padding="12,10" MaxLength="3"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Text="Сумма пополнения (₽):" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="OverlayAmount" FontSize="15" Padding="12,10" Margin="0,0,0,8">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="10"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+
+                                    <!-- Quick amounts -->
+                                    <WrapPanel Margin="0,5,0,18" HorizontalAlignment="Center">
+                                        <Button Content="50 000" Tag="50000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="100 000" Tag="100000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="500 000" Tag="500000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="1 000 000" Tag="1000000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                        <Button Content="5 000 000" Tag="5000000" Click="OverlayQuickAmount_Click"
+                                                Padding="12,7" Margin="3" FontSize="12" Cursor="Hand"
+                                                Background="#FFEDE7F6" Foreground="#FF6C2BD9" FontWeight="Bold" BorderThickness="0"/>
+                                    </WrapPanel>
+
+                                    <TextBlock x:Name="OverlayError" FontSize="12" Foreground="#FFD32F2F"
+                                               FontWeight="SemiBold" Margin="0,0,0,12" TextWrapping="Wrap"
+                                               Visibility="Collapsed"/>
+
+                                    <Button Content="ПОПОЛНИТЬ" Click="OverlayTopUp_Click"
+                                            FontSize="16" FontWeight="Bold" Foreground="White"
+                                            Padding="20,14" Cursor="Hand" HorizontalAlignment="Stretch">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Bg" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                            <GradientStop Color="#FF388E3C" Offset="0"/>
+                                                            <GradientStop Color="#FF4CAF50" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="#AA388E3C" ShadowDepth="0" BlurRadius="12" Opacity="0.4"/>
+                                                    </Border.Effect>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bg" Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="#CC4CAF50" ShadowDepth="0" BlurRadius="25" Opacity="0.7"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- Profile Overlay Panel -->
+        <Grid x:Name="ProfileOverlay" Visibility="Collapsed" Opacity="0">
+            <!-- Dark background -->
+            <Border Background="#88000000" MouseLeftButtonDown="CloseProfileOverlay_Click"/>
+
+            <!-- Slide-in panel from left -->
+            <Border x:Name="ProfilePanel" HorizontalAlignment="Left" Width="480"
+                    Background="#FFF8F5FF" CornerRadius="0,20,20,0"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TranslateTransform x:Name="ProfilePanelTranslate" X="-500"/>
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="5" BlurRadius="25" Opacity="0.3" Direction="0"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Panel Header -->
+                    <Border Grid.Row="0" Padding="25,20" CornerRadius="0,20,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                                <GradientStop Color="#FF9B30FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Личный кабинет" FontSize="22" FontWeight="Black"
+                                           Foreground="White"/>
+                            </StackPanel>
+                            <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    FontSize="18" Foreground="White" Background="Transparent"
+                                    BorderThickness="0" Cursor="Hand" Click="CloseProfilePanel_Click"
+                                    Padding="8,4"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Panel Content -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="25,20">
+                            <!-- User Info -->
+                            <Border CornerRadius="14" Background="White" Padding="20" Margin="0,0,0,15">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="Информация" FontSize="17" FontWeight="Bold" Margin="0,0,0,12"/>
+                                    <TextBlock x:Name="ProfileLogin" FontSize="14" Margin="0,3"/>
+                                    <TextBlock x:Name="ProfileDate" FontSize="14" Margin="0,3"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Border CornerRadius="8" Padding="12,8" Background="#FFEDE7F6" Margin="0,0,10,0">
+                                            <TextBlock x:Name="ProfilePurchaseCount" FontSize="13"
+                                                       Foreground="#FF6C2BD9" FontWeight="Bold"/>
+                                        </Border>
+                                        <Border CornerRadius="8" Padding="12,8" Background="#FFE8F5E9">
+                                            <TextBlock x:Name="ProfileTotalSpent" FontSize="13"
+                                                       Foreground="#FF388E3C" FontWeight="Bold"/>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Change Password -->
+                            <Border CornerRadius="14" Background="White" Padding="20" Margin="0,0,0,15">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="Сменить пароль" FontSize="17" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                                    <TextBlock Text="Текущий пароль:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <PasswordBox x:Name="ProfileOldPassword" FontSize="14" Padding="10,8" Margin="0,0,0,12"/>
+
+                                    <TextBlock Text="Новый пароль:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <PasswordBox x:Name="ProfileNewPassword" FontSize="14" Padding="10,8" Margin="0,0,0,12"/>
+
+                                    <TextBlock x:Name="ProfilePasswordError" FontSize="12" Foreground="#FFD32F2F"
+                                               FontWeight="SemiBold" Margin="0,0,0,8" Visibility="Collapsed" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="ProfilePasswordSuccess" FontSize="12" Foreground="#FF388E3C"
+                                               FontWeight="SemiBold" Margin="0,0,0,8" Visibility="Collapsed" TextWrapping="Wrap"/>
+
+                                    <Button Content="Сменить пароль" Click="ProfileChangePassword_Click"
+                                            FontSize="14" FontWeight="SemiBold" Foreground="White"
+                                            Padding="18,10" Cursor="Hand" HorizontalAlignment="Left">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Bg" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                            <GradientStop Color="#FF6C2BD9" Offset="0"/>
+                                                            <GradientStop Color="#FF9B30FF" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bg" Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="#CC9B30FF" ShadowDepth="0"
+                                                                                  BlurRadius="15" Opacity="0.5"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Purchase History -->
+                            <Border CornerRadius="14" Background="White" Padding="20">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="12" Opacity="0.08"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <TextBlock Text="История покупок" FontSize="17" FontWeight="Bold" Margin="0,0,0,12"/>
+                                    <DataGrid x:Name="ProfilePurchasesGrid"
+                                              AutoGenerateColumns="False"
+                                              IsReadOnly="True"
+                                              SelectionMode="Single"
+                                              CanUserAddRows="False"
+                                              CanUserDeleteRows="False"
+                                              GridLinesVisibility="Horizontal"
+                                              HeadersVisibility="Column"
+                                              BorderThickness="1"
+                                              BorderBrush="#FFDDDDDD"
+                                              MaxHeight="300">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Автомобиль" Binding="{Binding Car.DisplayName}" Width="*"/>
+                                            <DataGridTextColumn Header="Сумма" Binding="{Binding PaidAmount, StringFormat={}{0:N0} ₽}" Width="120"/>
+                                            <DataGridTextColumn Header="Дата" Binding="{Binding DateFormatted}" Width="120"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
